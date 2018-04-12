@@ -1,0 +1,6 @@
+topic: ~whatisthis()
+concept:(whatisthis) ["what is this" "what is it" "describe this" "what is that" "what do you see"]
+concept:(isee) ["i think it's a" "i see a" "you are showing me a"]
+
+u:(~whatisthis) %check_object
+proposal: %object_detected ~isee $object_output
