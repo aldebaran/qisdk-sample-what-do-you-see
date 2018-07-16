@@ -1,23 +1,35 @@
 package com.example.android.tflitecamerademo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.QiSDK;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.softbankrobotics.sample.whatdoyousee.R;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SplashScreenActivity extends Activity {
+public class SplashScreenActivity extends Activity implements RobotLifecycleCallbacks {
 
     @BindView(R.id.img_cross)
     ImageView imgCross;
+    @BindView(R.id.animation_view)
+    LottieAnimationView animationView;
 
+    //region Lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,23 +47,70 @@ public class SplashScreenActivity extends Activity {
         setContentView(R.layout.activity_splashscreen);
         ButterKnife.bind(this);
 
-        new CountDownTimer(1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
+        checkLanguage();
+    }
 
-            }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        checkLanguage();
+    }
 
-            @Override
-            public void onFinish() {
-                Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
-                SplashScreenActivity.this.startActivity(mainIntent);
-                SplashScreenActivity.this.finish();
-            }
-        };
+    @Override
+    protected void onDestroy() {
+        QiSDK.unregister(this);
+        super.onDestroy();
+    }
+    //endregion
+
+    private void goToMainActivity() {
+        Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
+        SplashScreenActivity.this.startActivity(mainIntent);
+        SplashScreenActivity.this.finish();
+    }
+
+    private void checkLanguage() {
+        if (!Locale.getDefault().getDisplayLanguage().equals("English")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("WARNING")
+                    .setMessage("This application is only available in English. Please set the tablet language to \"English\".")
+                    .setPositiveButton("Settings", (dialog, which) -> {
+                        startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+                    })
+                    .setNegativeButton("Leave", (dialog, which) -> {
+                        finishAffinity();
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+            // Register the RobotLifecycleCallbacks to this Activity.
+            QiSDK.register(this, this);
+        }
     }
 
     @OnClick(R.id.img_cross)
     public void onViewClicked() {
         this.finish();
     }
+
+    //region RobotCallback
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        Say say = SayBuilder.with(qiContext)
+                .withText("Alright I’m ready")
+                .build();
+
+        say.run();
+        goToMainActivity();
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+
+    }
+    //endregion
 }
