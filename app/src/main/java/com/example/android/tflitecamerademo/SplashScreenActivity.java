@@ -69,15 +69,12 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     }
 
     private void checkLanguage() {
-        if (!Locale.getDefault().getDisplayLanguage().equals("English")) {
+        if (!Locale.getDefault().getDisplayLanguage().equals(R.string.language)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("WARNING")
-                    .setMessage("This application is only available in English. Please set the tablet language to \"English\".")
-                    .setPositiveButton("Settings", (dialog, which) -> {
+            builder.setTitle(R.string.wrong_language_title_dialog)
+                    .setMessage(R.string.wrong_language_message_dialog)
+                    .setPositiveButton(R.string.setting_button_dialog, (dialog, which) -> {
                         startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
-                    })
-                    .setNegativeButton("Leave", (dialog, which) -> {
-                        finishAffinity();
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();

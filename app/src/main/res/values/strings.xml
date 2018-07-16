@@ -27,5 +27,9 @@
 
     <!--Lottie File-->
     <string name="splashscreen">lottie/splashy_loader.json</string>
+    <string name="language">English</string>
+    <string name="wrong_language_title_dialog">WARNING</string>
+    <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
+    <string name="setting_button_dialog">Go to settings</string>
 
 </resources>
