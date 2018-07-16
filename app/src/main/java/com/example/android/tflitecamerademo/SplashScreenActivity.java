@@ -76,8 +76,8 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
         }
     }
 
-    private void goToMainActivity() {
-        Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
+    private void goToIntroduction() {
+        Intent mainIntent = new Intent(SplashScreenActivity.this, IntroductionActivity.class);
         SplashScreenActivity.this.startActivity(mainIntent);
         SplashScreenActivity.this.finish();
     }
@@ -95,7 +95,7 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
                 .build();
 
         say.run();
-        goToMainActivity();
+        goToIntroduction();
     }
 
     @Override
