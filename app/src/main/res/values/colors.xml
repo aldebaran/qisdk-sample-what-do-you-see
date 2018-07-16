@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  Copyright 2015 The Android Open Source Project
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,4 +15,22 @@
 -->
 <resources>
     <color name="control_background">#cc4285f4</color>
+    <color name="azure">#2196f3</color>
+    <color name="azure_dark">#3F51B5</color>
+    <color name="marigold">#ffc107</color>
+    <color name="brownish_grey">#706565</color>
+    <color name="bright_sky_blue_100">#FF23bfff</color>
+    <color name="bright_sky_blue_30">#5523bfff</color>
+    <color name="warm_grey">#757575</color>
+
+    <color name="colorPrimary">@color/azure</color>
+    <color name="colorPrimaryDark">@color/azure_dark</color>
+    <color name="colorAccent">@color/marigold</color>
+
+    <color name="colorText">@color/brownish_grey</color>
+
+    <color name="colorProgress">@color/bright_sky_blue_100</color>
+    <color name="colorProgressBack">@color/bright_sky_blue_30</color>
+    <color name="mid_green">#4caf50</color>
+    <color name="black_overlay">#66000000</color>
 </resources>
