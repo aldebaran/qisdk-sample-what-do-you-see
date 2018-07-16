@@ -43,7 +43,6 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
                 | View.SYSTEM_UI_FLAG_IMMERSIVE
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-
         setContentView(R.layout.activity_splashscreen);
         ButterKnife.bind(this);
 
@@ -62,14 +61,8 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     }
     //endregion
 
-    private void goToMainActivity() {
-        Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
-        SplashScreenActivity.this.startActivity(mainIntent);
-        SplashScreenActivity.this.finish();
-    }
-
     private void checkLanguage() {
-        if (!Locale.getDefault().getDisplayLanguage().equals(R.string.language)) {
+        if (!Locale.getDefault().getDisplayLanguage().equals(getString(R.string.language))) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.wrong_language_title_dialog)
                     .setMessage(R.string.wrong_language_message_dialog)
@@ -79,9 +72,14 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         } else {
-            // Register the RobotLifecycleCallbacks to this Activity.
             QiSDK.register(this, this);
         }
+    }
+
+    private void goToMainActivity() {
+        Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
+        SplashScreenActivity.this.startActivity(mainIntent);
+        SplashScreenActivity.this.finish();
     }
 
     @OnClick(R.id.img_cross)
