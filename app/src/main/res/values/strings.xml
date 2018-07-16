@@ -22,4 +22,10 @@
     <string name="toggle_turn_off">NN:Off</string>
     <string name="toggle">Use NNAPI</string>
     <string name="label_what_do_you_see">\"What do you see ?\"</string>
+
+
+
+    <!--Lottie File-->
+    <string name="splashscreen">lottie/splashy_loader.json</string>
+
 </resources>
