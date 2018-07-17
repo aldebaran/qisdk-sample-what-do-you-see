@@ -18,8 +18,8 @@
     <string name="splashscreen">lottie/splashy_loader.json</string>
 
     <!--Text to speak-->
-    <string name="ready_speak_text">Alright I’m ready</string>
-    <string name="intro_speak_text">Let me show you what I’m capable of about object recognition</string>
+    <string name="ready_speak_text">Alright I\'m ready</string>
+    <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition</string>
 
     <!--String-->
     <string name="language">English</string>

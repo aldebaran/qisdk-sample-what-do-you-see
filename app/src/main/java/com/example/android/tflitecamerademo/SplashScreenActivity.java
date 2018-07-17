@@ -100,14 +100,14 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
         goToIntroduction();
     }
 
-    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusLost() {
+        //NOT USED IN THIS CASE
     }
 
-    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusRefused(String reason) {
+        //NOT USED IN THIS CASE
         Log.e(TAG, "onRobotFocusRefused: " + reason);
     }
     //endregion
