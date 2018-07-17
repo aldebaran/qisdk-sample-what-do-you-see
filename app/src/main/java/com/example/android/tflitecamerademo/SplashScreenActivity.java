@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SplashScreenActivity extends Activity implements RobotLifecycleCallbacks {
+    private static final String TAG = "SplashScreenActivity";
 
     @BindView(R.id.img_cross)
     ImageView imgCross;
@@ -76,8 +78,8 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
         }
     }
 
-    private void goToMainActivity() {
-        Intent mainIntent = new Intent(SplashScreenActivity.this, CameraActivity.class);
+    private void goToIntroduction() {
+        Intent mainIntent = new Intent(SplashScreenActivity.this, IntroductionActivity.class);
         SplashScreenActivity.this.startActivity(mainIntent);
         SplashScreenActivity.this.finish();
     }
@@ -91,21 +93,22 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
-                .withText("Alright I’m ready")
+                .withResource(R.string.ready_speak_text)
                 .build();
 
         say.run();
-        goToMainActivity();
+        goToIntroduction();
     }
 
     @Override
     public void onRobotFocusLost() {
-
+        //NOT USED IN THIS CASE
     }
 
     @Override
     public void onRobotFocusRefused(String reason) {
-
+        //NOT USED IN THIS CASE
+        Log.e(TAG, "onRobotFocusRefused: " + reason);
     }
     //endregion
 }
