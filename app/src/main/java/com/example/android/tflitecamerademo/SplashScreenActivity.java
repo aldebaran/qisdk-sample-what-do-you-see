@@ -91,7 +91,7 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
-                .withText(getString(R.string.ready_speak_text))
+                .withResource(R.string.ready_speak_text)
                 .build();
 
         say.run();

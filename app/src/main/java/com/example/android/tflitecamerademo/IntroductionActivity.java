@@ -47,7 +47,7 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
-                .withText(getString(R.string.intro_speak_text))
+                .withResource(R.string.intro_speak_text)
                 .build();
         say.run();
     }
