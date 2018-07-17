@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SplashScreenActivity extends Activity implements RobotLifecycleCallbacks {
+    private static final String TAG = "SplashScreenActivity";
 
     @BindView(R.id.img_cross)
     ImageView imgCross;
@@ -98,14 +100,15 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
         goToIntroduction();
     }
 
+    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusLost() {
-
     }
 
+    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusRefused(String reason) {
-
+        Log.e(TAG, "onRobotFocusRefused: " + reason);
     }
     //endregion
 }

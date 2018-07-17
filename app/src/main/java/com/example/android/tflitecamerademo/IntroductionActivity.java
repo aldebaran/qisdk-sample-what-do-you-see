@@ -1,6 +1,7 @@
 package com.example.android.tflitecamerademo;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.aldebaran.qi.sdk.QiContext;
@@ -16,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class IntroductionActivity extends RobotActivity implements RobotLifecycleCallbacks {
+    private static final String TAG = "IntroductionActivity";
 
     @BindView(R.id.img_cross)
     ImageView imgCross;
@@ -52,14 +54,15 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
         say.run();
     }
 
+    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusLost() {
-
     }
 
+    //NOT USED IN THIS CASE
     @Override
     public void onRobotFocusRefused(String reason) {
-
+        Log.e(TAG, "onRobotFocusRefused: " + reason);
     }
     //endregion
 }
