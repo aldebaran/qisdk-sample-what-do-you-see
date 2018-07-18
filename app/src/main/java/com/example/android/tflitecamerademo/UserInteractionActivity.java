@@ -4,16 +4,32 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.util.Printer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldebaran.qi.Consumer;
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.ChatBuilder;
+import com.aldebaran.qi.sdk.builder.HolderBuilder;
+import com.aldebaran.qi.sdk.builder.ListenBuilder;
+import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.Listen;
+import com.aldebaran.qi.sdk.object.conversation.ListenResult;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
+import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.aldebaran.qi.sdk.object.conversation.Topic;
+import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
+import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import butterknife.BindView;
@@ -35,8 +51,11 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgHome;
 
     CountDownTimer timer;
+    int countError = 0;
     MediaPlayer player;
+    Chat pepperChat;
     QiContext qiContext;
+    Holder pepperHolder;
 
     //region Lifecycle
     @Override
@@ -63,8 +82,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     protected void onDestroy() {
-        QiSDK.unregister(this);
-        timer.cancel();
+        releaseRobot();
         super.onDestroy();
     }
     //endregion
@@ -73,12 +91,20 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (this.qiContext == null)
             return;
 
+        pepperHolder = HolderBuilder.with(qiContext)
+                .withAutonomousAbilities(AutonomousAbilitiesType.BACKGROUND_MOVEMENT)
+                .build();
+
+        pepperHolder.hold();
+
         runOnUiThread(() -> btnSee.setVisibility(View.GONE));
 
         Say say = SayBuilder.with(this.qiContext)
                 .withResource(R.string.briefing_speak_text)
                 .build();
         say.run();
+
+        //TODO set animation to pepper arms
 
         setupRobotToCallToAction();
     }
@@ -96,6 +122,45 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         player.start();
         timer.start();
+
+        prepareChatBot();
+
+
+
+        /*Listen listen = ListenBuilder.with(qiContext).withPhraseSet();
+        ListenResult result = listen.run();
+        result.getHeardPhrase();*/
+
+    }
+
+    private void prepareChatBot() {
+        if (qiContext == null)
+            return;
+
+        QiChatbot qiChatbot =
+                QiChatbotBuilder
+                        .with(qiContext)
+                        .withTopic(TopicBuilder
+                                .with(qiContext)
+                                .withResource(R.raw.see)
+                                .build())
+                        .build();
+
+        pepperChat = ChatBuilder.with(qiContext)
+                .withChatbot(qiChatbot)
+                .build();
+
+        pepperChat.async().run();
+
+        pepperChat.addOnHeardListener(heardPhrase -> {
+            timer.cancel();
+        });
+        pepperChat.addOnNoReplyFoundForListener(input -> {
+            countError++;
+            if (countError > 3) {
+                onViewClicked();
+            }
+        });
     }
 
     private void scanObject() {
@@ -106,9 +171,21 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void catchInput() {
     }
 
+    private void releaseRobot() {
+        if (pepperChat != null) {
+            pepperChat.removeAllOnStartedListeners();
+        }
+        if (pepperHolder != null) {
+            pepperHolder.async().release();
+        }
+        timer.cancel();
+        QiSDK.unregister(this);
+    }
+
     //region onClick
     @OnClick(R.id.img_cross)
     public void onImgCrossClicked() {
+        pepperHolder.async().release();
         timer.cancel();
         finish();
     }
@@ -135,7 +212,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     public void onRobotFocusLost() {
-        timer.cancel();
+        releaseRobot();
         qiContext = null;
     }
 

@@ -1,0 +1,7 @@
+topic: ~see()
+
+concept:(see) ["what do you see"]
+
+u:(~see) Get it ^endDiscuss(end reason)
+
+u:(e:Dialog/NotUnderstood) What did you say?
