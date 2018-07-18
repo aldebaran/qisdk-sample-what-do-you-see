@@ -8,9 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldebaran.qi.Consumer;
-import com.aldebaran.qi.Future;
-import com.aldebaran.qi.sdk.Qi;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
@@ -58,7 +55,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
             @Override
             public void onFinish() {
-                setupRobotToBriefing();
+                onViewClicked();
             }
         };
 
@@ -67,6 +64,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     @Override
     protected void onDestroy() {
         QiSDK.unregister(this);
+        timer.cancel();
         super.onDestroy();
     }
     //endregion
@@ -75,10 +73,11 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (this.qiContext == null)
             return;
 
+        runOnUiThread(() -> btnSee.setVisibility(View.GONE));
+
         Say say = SayBuilder.with(this.qiContext)
                 .withResource(R.string.briefing_speak_text)
                 .build();
-
         say.run();
 
         setupRobotToCallToAction();
@@ -88,21 +87,20 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (qiContext == null)
             return;
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnSee.setVisibility(View.VISIBLE);
-            }
-        });
+        runOnUiThread(() -> btnSee.setVisibility(View.VISIBLE));
 
         Say say = SayBuilder.with(this.qiContext)
                 .withResource(R.string.call_to_action_speak_text)
                 .build();
         say.run();
+
         player.start();
+        timer.start();
     }
 
     private void scanObject() {
+        timer.cancel();
+
     }
 
     private void catchInput() {
@@ -111,16 +109,18 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     //region onClick
     @OnClick(R.id.img_cross)
     public void onImgCrossClicked() {
-        this.finish();
+        timer.cancel();
+        finish();
     }
 
     @OnClick(R.id.btn_see)
     public void onBtnSeeClicked() {
-
+        timer.cancel();
     }
 
     @OnClick(R.id.img_home)
     public void onViewClicked() {
+        timer.cancel();
         QiSDK.register(this, this);
     }
     //endregion
@@ -128,13 +128,15 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     //region Robot Callback
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
+        timer.cancel();
         this.qiContext = qiContext;
         setupRobotToBriefing();
     }
 
     @Override
     public void onRobotFocusLost() {
-        this.qiContext = null;
+        timer.cancel();
+        qiContext = null;
     }
 
     @Override
