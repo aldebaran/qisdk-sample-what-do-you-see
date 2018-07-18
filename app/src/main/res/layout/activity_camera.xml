@@ -17,7 +17,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
     tools:context="com.example.android.tflitecamerademo.CameraActivity">
 
     <FrameLayout
@@ -32,7 +31,6 @@
         android:background="@android:color/white"
         android:padding="8dp"
         android:text="@string/label_what_do_you_see"
-        android:textColor="@android:color/darker_gray"
         android:textSize="80sp" />
 
 </FrameLayout>

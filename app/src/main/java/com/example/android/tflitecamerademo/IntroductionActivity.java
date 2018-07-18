@@ -1,5 +1,6 @@
 package com.example.android.tflitecamerademo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -45,6 +46,12 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
         this.finish();
     }
 
+    private void goToUserInteraction() {
+        Intent mainIntent = new Intent(IntroductionActivity.this, UserInteractionActivity.class);
+        IntroductionActivity.this.startActivity(mainIntent);
+        IntroductionActivity.this.finish();
+    }
+
     //region RobotCallback
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
@@ -52,6 +59,8 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
                 .withResource(R.string.intro_speak_text)
                 .build();
         say.run();
+
+        goToUserInteraction();
     }
 
     @Override

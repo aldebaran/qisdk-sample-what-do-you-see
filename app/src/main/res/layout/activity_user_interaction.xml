@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.tflitecamerademo.IntroductionActivity">
+
+    <ImageView
+        android:id="@+id/img_cross"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="15dip"
+        android:src="@drawable/ic_close_cross" />
+
+    <ImageView
+        android:id="@+id/img_home"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="10dip"
+        android:src="@drawable/ic_home" />
+
+    <TextView
+        android:id="@+id/txt_question_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="20dip"
+        android:text="\?"
+        android:textColor="@android:color/black"
+        android:textSize="300sp" />
+
+    <ImageView
+        android:id="@+id/img_pepper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/txt_question_mark"
+        android:src="@drawable/pepper_placeholder" />
+
+    <TextView
+        android:id="@+id/btn_see"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dip"
+        android:background="@drawable/rounded_corner_background"
+        android:padding="15dip"
+        android:text="What do you see"
+        android:textColor="@android:color/black"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

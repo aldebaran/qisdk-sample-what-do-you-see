@@ -20,6 +20,8 @@
     <!--Text to speak-->
     <string name="ready_speak_text">Alright I\'m ready</string>
     <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition</string>
+    <string name="briefing_speak_text">You can show me an object at the height of my tablet, and I will say what I recognize</string>
+    <string name="call_to_action_speak_text">Tell me, \"what do you see\", when you are ready</string>
 
     <!--String-->
     <string name="language">English</string>
@@ -34,5 +36,6 @@
     <string name="wrong_language_title_dialog">WARNING</string>
     <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
     <string name="setting_button_dialog">Go to settings</string>
+
 
 </resources>
