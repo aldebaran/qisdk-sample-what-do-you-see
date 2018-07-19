@@ -4,30 +4,23 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
-import android.util.Printer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldebaran.qi.Consumer;
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.ChatBuilder;
 import com.aldebaran.qi.sdk.builder.HolderBuilder;
-import com.aldebaran.qi.sdk.builder.ListenBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
-import com.aldebaran.qi.sdk.object.conversation.Listen;
-import com.aldebaran.qi.sdk.object.conversation.ListenResult;
-import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Say;
-import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
 import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.softbankrobotics.sample.whatdoyousee.R;
@@ -54,6 +47,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     int countError = 0;
     MediaPlayer player;
     Chat pepperChat;
+    Future<Void> futureChat;
     QiContext qiContext;
     Holder pepperHolder;
 
@@ -125,12 +119,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         prepareChatBot();
 
-
-
-        /*Listen listen = ListenBuilder.with(qiContext).withPhraseSet();
-        ListenResult result = listen.run();
-        result.getHeardPhrase();*/
-
     }
 
     private void prepareChatBot() {
@@ -150,17 +138,22 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .withChatbot(qiChatbot)
                 .build();
 
-        pepperChat.async().run();
+
+        futureChat = pepperChat.async().run();
 
         pepperChat.addOnHeardListener(heardPhrase -> {
             timer.cancel();
         });
-        pepperChat.addOnNoReplyFoundForListener(input -> {
+
+        pepperChat.addOnFallbackReplyFoundForListener(input -> {
             countError++;
             if (countError > 3) {
+                futureChat.requestCancellation();
                 onViewClicked();
             }
         });
+
+        qiChatbot.addOnEndedListener(endReason -> futureChat.requestCancellation());
     }
 
     private void scanObject() {
@@ -172,6 +165,10 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     private void releaseRobot() {
+        if (futureChat != null
+                && !futureChat.isCancelled()) {
+            futureChat.requestCancellation();
+        }
         if (pepperChat != null) {
             pepperChat.removeAllOnStartedListeners();
         }
