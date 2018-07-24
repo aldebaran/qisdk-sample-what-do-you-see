@@ -1,5 +1,7 @@
 package com.example.android.tflitecamerademo;
 
+import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -8,12 +10,24 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldebaran.qi.Consumer;
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.ChatBuilder;
+import com.aldebaran.qi.sdk.builder.HolderBuilder;
+import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.builder.TopicBuilder;
+import com.aldebaran.qi.sdk.core.QiThreadPool;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.BodyLanguageOption;
+import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
+import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import butterknife.BindView;
@@ -34,9 +48,17 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     @BindView(R.id.img_home)
     ImageView imgHome;
 
+    int countError = 0;
+
     CountDownTimer timer;
     MediaPlayer player;
+
     QiContext qiContext;
+    Holder pepperHolder;
+
+    QiChatbot qiChatbot;
+    Chat pepperChat;
+    Future<Void> futureChat;
 
     //region Lifecycle
     @Override
@@ -44,6 +66,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_user_interaction);
+
         ButterKnife.bind(this);
         QiSDK.register(this, this);
 
@@ -55,23 +78,91 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
             @Override
             public void onFinish() {
-                onViewClicked();
+                stopChat(() -> goToBriefing());
             }
         };
-
     }
 
     @Override
     protected void onDestroy() {
-        QiSDK.unregister(this);
-        timer.cancel();
+        releaseRobot();
         super.onDestroy();
     }
     //endregion
 
+    //region RobotCleaning
+    private void releaseRobot() {
+        timer.cancel();
+
+        if (pepperHolder != null) {
+            pepperHolder.async().release();
+        }
+
+        stopChat(null);
+
+        unregisterListener();
+
+        QiSDK.unregister(this);
+    }
+
+    private void stopChat(Runnable runnable) {
+        if (futureChat != null
+                && !futureChat.isCancelled()
+                && !futureChat.isDone()) {
+            futureChat.thenConsume(voidFuture -> {
+                if (voidFuture.isCancelled()
+                        || voidFuture.hasError())
+                    if (runnable != null)
+                        runnable.run();
+            });
+            futureChat.requestCancellation();
+        } else {
+            if (runnable != null)
+                runnable.run();
+        }
+    }
+
+    private void unregisterListener() {
+        if (pepperChat != null) {
+            pepperChat.removeAllOnStartedListeners();
+            pepperChat.removeAllOnHeardListeners();
+            pepperChat.removeAllOnFallbackReplyFoundForListeners();
+        }
+        if (qiChatbot != null) {
+            qiChatbot.removeAllOnEndedListeners();
+        }
+    }
+    //endregion
+
+    //region SetupRobot
+    private void freezeRobot() {
+        //TODO set animation to pepper arms
+
+        pepperHolder = HolderBuilder.with(qiContext)
+                .withAutonomousAbilities(AutonomousAbilitiesType.BACKGROUND_MOVEMENT)
+                .build();
+
+        pepperHolder.hold();
+        qiChatbot.setSpeakingBodyLanguage(BodyLanguageOption.DISABLED);
+    }
+
+    private void prepareChatBot() {
+        qiChatbot = QiChatbotBuilder
+                .with(qiContext)
+                .withTopic(TopicBuilder
+                        .with(qiContext)
+                        .withResource(R.raw.see)
+                        .build())
+                .build();
+    }
+
     private void setupRobotToBriefing() {
         if (this.qiContext == null)
             return;
+
+        prepareChatBot();
+
+        freezeRobot();
 
         runOnUiThread(() -> btnSee.setVisibility(View.GONE));
 
@@ -96,20 +187,50 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         player.start();
         timer.start();
+
+        setupChatBot();
     }
 
+    private void setupChatBot() {
+        if (qiContext == null)
+            return;
+
+        if (qiChatbot == null)
+            prepareChatBot();
+
+        pepperChat.addOnHeardListener(heardPhrase -> timer.cancel());
+
+        pepperChat.addOnFallbackReplyFoundForListener(input -> {
+            countError++;
+            if (countError > 3) {
+                countError = 0;
+                stopChat(this::goToBriefing);
+            }
+        });
+
+        qiChatbot.addOnEndedListener(endReason -> stopChat(this::scanObject));
+        qiChatbot.addOnEndedListener(endReason -> futureChat.requestCancellation());
+
+        pepperChat = ChatBuilder.with(qiContext)
+                .withChatbot(qiChatbot)
+                .build();
+
+        futureChat = pepperChat.async().run();
+
+    }
+    //endregion
+
+    //region TensorFlow
     private void scanObject() {
-        timer.cancel();
 
     }
-
-    private void catchInput() {
-    }
+    //endregion
 
     //region onClick
     @OnClick(R.id.img_cross)
     public void onImgCrossClicked() {
         timer.cancel();
+        releaseRobot();
         finish();
     }
 
@@ -120,8 +241,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @OnClick(R.id.img_home)
     public void onViewClicked() {
-        timer.cancel();
-        QiSDK.register(this, this);
+        goToBriefing();
+    }
+
+    private void goToBriefing() {
+        QiThreadPool.run(() -> {
+            timer.cancel();
+            setupRobotToBriefing();
+        });
     }
     //endregion
 
@@ -135,7 +262,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     public void onRobotFocusLost() {
-        timer.cancel();
+        releaseRobot();
         qiContext = null;
     }
 
