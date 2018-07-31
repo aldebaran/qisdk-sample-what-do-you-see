@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.aldebaran.qi.sdk.object.image.EncodedImage;
 import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
+import com.example.android.tflitecamerademo.Utils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.TensorFlowImageClassifier;
 import com.softbankrobotics.sample.whatdoyousee.R;
@@ -58,6 +60,17 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgHome;
     @BindView(R.id.img_warning)
     ImageView imgWarning;
+
+    private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
+    private static final int INPUT_SIZE = 224;
+    private static final int IMAGE_MEAN = 117;
+    private static final float IMAGE_STD = 1;
+    private static final String INPUT_NAME = "input";
+    private static final String OUTPUT_NAME = "output";
+    private static final String MODEL_FILE = "file:///android_asset/tensorflow_inception_graph.pb";
+    private static final String LABEL_FILE =
+            "file:///android_asset/imagenet_comp_graph_label_strings.txt";
+
 
     int countError = 0;
 
@@ -135,12 +148,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     private void unregisterListener() {
         if (pepperChat != null) {
-            pepperChat.removeAllOnStartedListeners();
-            pepperChat.removeAllOnHeardListeners();
-            pepperChat.removeAllOnFallbackReplyFoundForListeners();
+            pepperChat.async().removeAllOnStartedListeners();
+            pepperChat.async().removeAllOnHeardListeners();
+            pepperChat.async().removeAllOnFallbackReplyFoundForListeners();
         }
         if (qiChatbot != null) {
-            qiChatbot.removeAllOnEndedListeners();
+            qiChatbot.async().removeAllOnEndedListeners();
         }
     }
     //endregion
@@ -154,6 +167,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .build();
 
         pepperHolder.hold();
+
         qiChatbot.setSpeakingBodyLanguage(BodyLanguageOption.DISABLED);
     }
 
@@ -206,14 +220,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (qiContext == null)
             return;
 
-        if (qiChatbot == null)
-            prepareChatBot();
+        prepareChatBot();
 
         pepperChat = ChatBuilder.with(qiContext)
                 .withChatbot(qiChatbot)
                 .build();
 
         pepperChat.addOnHeardListener(heardPhrase -> timer.cancel());
+        qiChatbot.addOnEndedListener(endReason -> scanObject());
 
         pepperChat.addOnFallbackReplyFoundForListener(input -> {
             countError++;
@@ -222,7 +236,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 stopChat(this::goToBriefing);
             }
         });
-        qiChatbot.addOnEndedListener(endReason -> scanObject());
 
         futureChat = pepperChat.async().run();
 
@@ -270,18 +283,20 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     public void classifyImage(Bitmap bitmap) {
+        Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE);
+
         Classifier classifier =
                 TensorFlowImageClassifier.create(
                         getAssets(),
-                        "file:///android_asset/tensorflow_inception_graph.pb",
-                        "file:///android_asset/imagenet_comp_graph_label_strings.txt",
-                        224,
-                        128,
-                        128.0f,
-                        "input",
-                        "output");
+                        MODEL_FILE,
+                        LABEL_FILE,
+                        INPUT_SIZE,
+                        IMAGE_MEAN,
+                        IMAGE_STD,
+                        INPUT_NAME,
+                        OUTPUT_NAME);
 
-        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
         Log.d(TAG, "classifyImage: " + results.size());
         for (Classifier.Recognition reco :
                 results) {
