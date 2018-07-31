@@ -33,7 +33,7 @@ import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.aldebaran.qi.sdk.object.image.EncodedImage;
 import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
-import com.example.android.tflitecamerademo.Utils;
+import com.example.android.tflitecamerademo.tf.Utils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.TensorFlowImageClassifier;
 import com.softbankrobotics.sample.whatdoyousee.R;

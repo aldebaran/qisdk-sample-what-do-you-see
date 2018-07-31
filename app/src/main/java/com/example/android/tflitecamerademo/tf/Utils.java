@@ -1,7 +1,15 @@
-package com.example.android.tflitecamerademo;
+package com.example.android.tflitecamerademo.tf;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
+import android.widget.ImageView;
 
 public class Utils {
 
@@ -20,5 +28,14 @@ public class Utils {
                 bm, 0, 0, width, height, matrix, false);
         bm.recycle();
         return resizedBitmap;
+    }
+
+    public static void manageBlinkEffect(View v) {
+        ObjectAnimator anim = ObjectAnimator.ofInt(v, "backgroundColor", Color.WHITE);
+        anim.setDuration(1500);
+        anim.setEvaluator(new ArgbEvaluator());
+        anim.setRepeatMode(ValueAnimator.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        anim.start();
     }
 }
