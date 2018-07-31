@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.tflitecamerademo.IntroductionActivity">
+    tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
 
     <ImageView
         android:id="@+id/img_cross"
@@ -42,6 +42,15 @@
         android:layout_toRightOf="@id/txt_question_mark"
         android:src="@drawable/pepper_placeholder" />
 
+    <ImageView
+        android:id="@+id/img_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/img_pepper"
+        android:visibility="gone"
+        android:src="@drawable/ic_warning" />
+
     <TextView
         android:id="@+id/btn_see"
         android:layout_width="wrap_content"
@@ -56,6 +65,5 @@
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="gone" />
-
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo;
+package com.example.android.tflitecamerademo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

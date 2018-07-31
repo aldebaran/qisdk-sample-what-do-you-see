@@ -1,7 +1,7 @@
-package com.example.android.tflitecamerademo;
+package com.example.android.tflitecamerademo.activity;
 
-import android.app.Activity;
-import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldebaran.qi.Consumer;
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
@@ -19,16 +18,26 @@ import com.aldebaran.qi.sdk.builder.ChatBuilder;
 import com.aldebaran.qi.sdk.builder.HolderBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.builder.TakePictureBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.core.QiThreadPool;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.camera.TakePicture;
 import com.aldebaran.qi.sdk.object.conversation.BodyLanguageOption;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
 import com.aldebaran.qi.sdk.object.holder.Holder;
+import com.aldebaran.qi.sdk.object.image.EncodedImage;
+import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
+import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
+import com.example.android.tflitecamerademo.tf.Classifier;
+import com.example.android.tflitecamerademo.tf.TensorFlowImageClassifier;
 import com.softbankrobotics.sample.whatdoyousee.R;
+
+import java.nio.ByteBuffer;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +56,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     TextView btnSee;
     @BindView(R.id.img_home)
     ImageView imgHome;
+    @BindView(R.id.img_warning)
+    ImageView imgWarning;
 
     int countError = 0;
 
@@ -198,6 +209,10 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (qiChatbot == null)
             prepareChatBot();
 
+        pepperChat = ChatBuilder.with(qiContext)
+                .withChatbot(qiChatbot)
+                .build();
+
         pepperChat.addOnHeardListener(heardPhrase -> timer.cancel());
 
         pepperChat.addOnFallbackReplyFoundForListener(input -> {
@@ -207,13 +222,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 stopChat(this::goToBriefing);
             }
         });
-
-        qiChatbot.addOnEndedListener(endReason -> stopChat(this::scanObject));
-        qiChatbot.addOnEndedListener(endReason -> futureChat.requestCancellation());
-
-        pepperChat = ChatBuilder.with(qiContext)
-                .withChatbot(qiChatbot)
-                .build();
+        qiChatbot.addOnEndedListener(endReason -> scanObject());
 
         futureChat = pepperChat.async().run();
 
@@ -221,9 +230,65 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     //endregion
 
     //region TensorFlow
+    private void prepareToScan() {
+        runOnUiThread(() -> {
+            imgWarning.setVisibility(View.VISIBLE);
+            txtQuestionMark.setVisibility(View.GONE);
+        });
+    }
+
     private void scanObject() {
+        prepareToScan();
+        Future<TakePicture> takePictureFuture = TakePictureBuilder.with(qiContext).buildAsync();
+        Future<TimestampedImageHandle> timestampedImageHandleFuture = takePictureFuture.andThenCompose(takePicture -> {
+            Log.i(TAG, "take picture launched!");
+            return takePicture.async().run();
+        });
+
+        timestampedImageHandleFuture.andThenConsume(timestampedImageHandle -> {
+            Log.i(TAG, "Picture taken");
+            // get picture
+            EncodedImageHandle encodedImageHandle = timestampedImageHandle.getImage();
+
+            EncodedImage encodedImage = encodedImageHandle.getValue();
+            Log.i(TAG, "PICTURE RECEIVED!");
+
+            // get the byte buffer and cast it to byte array
+            ByteBuffer buffer = encodedImage.getData();
+            buffer.rewind();
+            final int pictureBufferSize = buffer.remaining();
+            final byte[] pictureArray = new byte[pictureBufferSize];
+            buffer.get(pictureArray);
+
+            Log.i(TAG, "PICTURE RECEIVED! (" + pictureBufferSize + " Bytes)");
+            // display picture
+            Bitmap pictureBitmap = BitmapFactory.decodeByteArray(pictureArray, 0, pictureBufferSize);
+
+            runOnUiThread(() -> classifyImage(pictureBitmap));
+        });
 
     }
+
+    public void classifyImage(Bitmap bitmap) {
+        Classifier classifier =
+                TensorFlowImageClassifier.create(
+                        getAssets(),
+                        "file:///android_asset/tensorflow_inception_graph.pb",
+                        "file:///android_asset/imagenet_comp_graph_label_strings.txt",
+                        224,
+                        128,
+                        128.0f,
+                        "input",
+                        "output");
+
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        Log.d(TAG, "classifyImage: " + results.size());
+        for (Classifier.Recognition reco :
+                results) {
+            Log.d(TAG, "classifyImage: " + reco);
+        }
+    }
+
     //endregion
 
     //region onClick
@@ -236,6 +301,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @OnClick(R.id.btn_see)
     public void onBtnSeeClicked() {
+        scanObject();
         timer.cancel();
     }
 

@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo;
+package com.example.android.tflitecamerademo.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
