@@ -23,16 +23,11 @@
     <string name="briefing_speak_text">You can show me an object at the height of my tablet, and I will say what I recognize</string>
     <string name="call_to_action_speak_text">Tell me, \"what do you see\", when you are ready</string>
     <string name="dont_understand_speak_text">Sorry, i don\'t understand\!</string>
+    <string name="dont_move_speak_text">Don\'t move!</string>
+    <string name="classify_speak_text">Maybe it\'s %s!</string>
 
     <!--String-->
     <string name="language">English</string>
-    <string name="picture">Picture</string>
-    <string name="description_info">Info</string>
-    <string name="request_permission">This sample needs camera permission.</string>
-    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
-    <string name="toggle_turn_on">NN:On</string>
-    <string name="toggle_turn_off">NN:Off</string>
-    <string name="toggle">Use NNAPI</string>
     <string name="label_what_do_you_see">\"What do you see ?\"</string>
     <string name="wrong_language_title_dialog">WARNING</string>
     <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
