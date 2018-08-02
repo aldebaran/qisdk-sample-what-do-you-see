@@ -4,9 +4,9 @@
 
     <stroke
         android:width="4dp"
-        android:color="@color/green_button_desactivated" />
+        android:color="@color/green_button_clicked" />
 
-    <solid android:color="@color/green_button_desactivated" />
+    <solid android:color="@color/green_button_clicked" />
 
     <corners android:radius="25dp" />
 

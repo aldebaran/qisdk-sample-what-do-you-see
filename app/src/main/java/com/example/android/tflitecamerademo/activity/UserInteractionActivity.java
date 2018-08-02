@@ -2,6 +2,7 @@ package com.example.android.tflitecamerademo.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -27,6 +28,7 @@ import com.aldebaran.qi.sdk.object.conversation.AutonomousReactionValidity;
 import com.aldebaran.qi.sdk.object.conversation.BodyLanguageOption;
 import com.aldebaran.qi.sdk.object.conversation.Bookmark;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
@@ -113,6 +115,18 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         playerStart = MediaPlayer.create(this, R.raw.mariocoin);
         playerFlash = MediaPlayer.create(this, R.raw.automatic_camera);
+
+        timer = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                runBriefing();
+            }
+        };
     }
 
     @Override
@@ -139,7 +153,9 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         goToBookmark("briefing");
 
-        futureChat = chat.async().run();
+        if (futureChat == null
+                || futureChat.isCancelled())
+            futureChat = chat.async().run();
     }
 
     private void runCallToAction() {
@@ -149,6 +165,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         runOnUiThread(() -> {
             playerStart.start();
             btnSee.setVisibility(View.VISIBLE);
+            timer.start();
         });
     }
 
@@ -176,6 +193,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .withChatbot(qiChatbot)
                 .build();
 
+        chat.addOnHeardListener(heardPhrase -> runOnUiThread(() -> timer.cancel()));
+
         qiChatbot.addOnBookmarkReachedListener(bookmark -> {
             if ("endAction".equals(bookmark.getName())) {
                 runCallToAction();
@@ -189,6 +208,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         });
 
         chat.addOnFallbackReplyFoundForListener(input -> {
+            timer.cancel();
             countError++;
             if (countError > 3) {
                 countError = 0;
@@ -331,7 +351,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     public void classifyImage(Bitmap bitmap) {
-        Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE);
+        Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
 
         Classifier classifier =
                 TensorFlowImageClassifier.create(
@@ -345,12 +365,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                         OUTPUT_NAME);
 
         final List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
-        imgResult.setImageBitmap(resizedBitmap);
+
         Classifier.Recognition highReco = new Classifier.Recognition("test", "testObject", 0.0f, null);
 
         QiThreadPool.run(() -> pepperHolder.release());
 
-        imgResult.setVisibility(View.VISIBLE);
+        showResultScreen(Utils.getResizedBitmap(bitmap, 1400, 900, true));
 
         for (Classifier.Recognition recognition :
                 results) {
@@ -376,11 +396,17 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         });
     }
 
+    private void showResultScreen(Bitmap bitmap) {
+        imgResult.setImageBitmap(bitmap);
+        imgResult.setVisibility(View.VISIBLE);
+        imgCross.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+        imgHome.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+    }
+
     private void readyToScanAgain() {
         runOnUiThread(() -> {
             prepareLayoutForScan();
-            btnAgain.setEnabled(false);
-            btnAgain.setVisibility(View.GONE);
+            btnAgain.setVisibility(View.VISIBLE);
             QiThreadPool.run(() -> goToBookmark("tryAgain"));
         });
     }
@@ -388,10 +414,11 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void prepareLayoutForScan() {
         isScanning.set(false);
         btnSee.setEnabled(true);
-        txtQuestionMark.setVisibility(View.VISIBLE);
+        btnAgain.setEnabled(true);
         imgResult.setVisibility(View.GONE);
         imgTick.setVisibility(View.GONE);
         imgWarning.setVisibility(View.GONE);
+        txtQuestionMark.setVisibility(View.VISIBLE);
         txtReco.setText("");
     }
 
@@ -407,6 +434,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     @OnClick(R.id.btn_see)
     public void onBtnSeeClicked() {
         if (!isScanning.get()) {
+            timer.cancel();
             runOnUiThread(() -> btnSee.setEnabled(false));
             QiThreadPool.run(() -> goToBookmark("dontMove"));
         }
