@@ -5,7 +5,7 @@ import android.graphics.Matrix;
 
 public class Utils {
 
-    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean recycle) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -18,7 +18,10 @@ public class Utils {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
+
+        if (recycle)
+            bm.recycle();
+
         return resizedBitmap;
     }
 }

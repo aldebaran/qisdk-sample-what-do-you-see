@@ -19,7 +19,8 @@
     <color name="colorAccent">#D8D1E7</color>
 
     <color name="white">#FFFF</color>
-    <color name="grey_button">#F3F3F3</color>
-    <color name="grey_border_button">#D8D8D8</color>
-    <color name="green_button_desactivated">#66A557</color>
+    <color name="grey_button">#FAFAFA</color>
+    <color name="grey_border_button">#80212121</color>
+    <color name="green_button_clicked">#41A94A</color>
+    <color name="green_button_touch">#1B5E20</color>
 </resources>
