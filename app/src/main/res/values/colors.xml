@@ -14,23 +14,12 @@
  limitations under the License.
 -->
 <resources>
-    <color name="control_background">#cc4285f4</color>
-    <color name="azure">#2196f3</color>
-    <color name="azure_dark">#3F51B5</color>
-    <color name="marigold">#ffc107</color>
-    <color name="brownish_grey">#706565</color>
-    <color name="bright_sky_blue_100">#FF23bfff</color>
-    <color name="bright_sky_blue_30">#5523bfff</color>
-    <color name="warm_grey">#757575</color>
+    <color name="colorPrimary">#00D7FD</color>
+    <color name="colorPrimaryDark">#0F9FDF</color>
+    <color name="colorAccent">#D8D1E7</color>
 
-    <color name="colorPrimary">@color/azure</color>
-    <color name="colorPrimaryDark">@color/azure_dark</color>
-    <color name="colorAccent">@color/marigold</color>
-
-    <color name="colorText">@color/brownish_grey</color>
-
-    <color name="colorProgress">@color/bright_sky_blue_100</color>
-    <color name="colorProgressBack">@color/bright_sky_blue_30</color>
-    <color name="mid_green">#4caf50</color>
-    <color name="black_overlay">#66000000</color>
+    <color name="white">#FFFF</color>
+    <color name="grey_button">#F3F3F3</color>
+    <color name="grey_border_button">#D8D8D8</color>
+    <color name="green_button_desactivated">#66A557</color>
 </resources>
