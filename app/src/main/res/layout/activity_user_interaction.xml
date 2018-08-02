@@ -4,24 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
 
-    <ImageView
-        android:id="@+id/img_cross"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:padding="15dip"
-        android:src="@drawable/ic_close_cross" />
-
-    <ImageView
-        android:id="@+id/img_home"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:padding="10dip"
-        android:src="@drawable/ic_home" />
-
     <TextView
         android:id="@+id/txt_question_mark"
         fontPath="fonts/Dosis-Bold.ttf"
@@ -85,6 +67,14 @@
         android:src="@color/white"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/img_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/txt_reco"
         fontPath="fonts/Dosis-Bold.ttf"
@@ -95,5 +85,40 @@
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/btn_again"
+        fontPath="fonts/Dosis-Bold.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dip"
+        android:background="@drawable/grey_green_selector"
+        android:elevation="10dp"
+        android:padding="20dip"
+        android:text="@string/do_it_again"
+        android:textColor="@android:color/black"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/img_cross"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="15dip"
+        android:src="@drawable/ic_close_cross" />
+
+    <ImageView
+        android:id="@+id/img_home"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="10dip"
+        android:src="@drawable/ic_home" />
 
 </RelativeLayout>

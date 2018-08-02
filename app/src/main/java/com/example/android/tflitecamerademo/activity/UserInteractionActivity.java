@@ -17,7 +17,6 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.ChatBuilder;
 import com.aldebaran.qi.sdk.builder.HolderBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
-import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.builder.TakePictureBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.core.QiThreadPool;
@@ -29,7 +28,6 @@ import com.aldebaran.qi.sdk.object.conversation.BodyLanguageOption;
 import com.aldebaran.qi.sdk.object.conversation.Bookmark;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
-import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
 import com.aldebaran.qi.sdk.object.holder.Holder;
@@ -61,6 +59,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgPepper;
     @BindView(R.id.btn_see)
     TextView btnSee;
+    @BindView(R.id.btn_again)
+    TextView btnAgain;
     @BindView(R.id.img_home)
     ImageView imgHome;
     @BindView(R.id.img_warning)
@@ -69,6 +69,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgTick;
     @BindView(R.id.flash_ctn)
     ImageView flashCtn;
+    @BindView(R.id.img_result)
+    ImageView imgResult;
     @BindView(R.id.txt_reco)
     TextView txtReco;
 
@@ -115,7 +117,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     protected void onDestroy() {
-        QiThreadPool.run(() -> releaseRobot());
+        QiThreadPool.run(this::releaseRobot);
         super.onDestroy();
     }
     //endregion
@@ -181,6 +183,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 if (!isScanning.get()) {
                     scanObject();
                 }
+            } else if ("endAgain".equals(bookmark.getName())) {
+                runOnUiThread(() -> btnAgain.setVisibility(View.VISIBLE));
             }
         });
 
@@ -241,6 +245,17 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                         runnable.run();
             });
             futureChat.requestCancellation();
+        }
+        if (futurePicture != null
+                && !futurePicture.isCancelled()
+                && !futurePicture.isDone()) {
+            futurePicture.thenConsume(voidFuture -> {
+                if (voidFuture.isCancelled()
+                        || voidFuture.hasError())
+                    if (runnable != null)
+                        runnable.run();
+            });
+            futurePicture.requestCancellation();
         } else {
             if (runnable != null)
                 runnable.run();
@@ -249,11 +264,10 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     private void unregisterListener() {
         if (chat != null) {
-            chat.async().removeAllOnStartedListeners();
-            chat.async().removeAllOnHeardListeners();
             chat.async().removeAllOnFallbackReplyFoundForListeners();
         }
         if (qiChatbot != null) {
+            qiChatbot.async().removeAllOnBookmarkReachedListeners();
             qiChatbot.async().removeAllOnEndedListeners();
         }
     }
@@ -262,6 +276,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     //region TensorFlow
     private void prepareToScan() {
         isScanning.set(true);
+
+        pepperHolder.hold();
 
         runOnUiThread(() -> {
             imgWarning.setVisibility(View.VISIBLE);
@@ -274,6 +290,9 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
             playerFlash.start();
             flashCtn.setVisibility(View.GONE);
             imgTick.setVisibility(View.VISIBLE);
+            btnAgain.setVisibility(View.GONE);
+            imgResult.setVisibility(View.GONE);
+            btnSee.setVisibility(View.GONE);
         });
     }
 
@@ -326,7 +345,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                         OUTPUT_NAME);
 
         final List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
+        imgResult.setImageBitmap(resizedBitmap);
         Classifier.Recognition highReco = new Classifier.Recognition("test", "testObject", 0.0f, null);
+
+        QiThreadPool.run(() -> pepperHolder.release());
+
+        imgResult.setVisibility(View.VISIBLE);
 
         for (Classifier.Recognition recognition :
                 results) {
@@ -343,26 +367,29 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 QiThreadPool.run(() -> {
                     qiChatbot.variable("object").setValue(recoName);
                     goToBookmark("classify");
-
-                    futureChat.requestCancellation();
                 });
             }
         }
+
+        QiThreadPool.run(() -> {
+            goToBookmark("again");
+        });
     }
 
     private void readyToScanAgain() {
         runOnUiThread(() -> {
             prepareLayoutForScan();
-            QiThreadPool.run(() -> goToBookmark("callToAction"));
+            btnAgain.setEnabled(false);
+            btnAgain.setVisibility(View.GONE);
+            QiThreadPool.run(() -> goToBookmark("tryAgain"));
         });
-
-        futureChat = chat.async().run();
     }
 
     private void prepareLayoutForScan() {
         isScanning.set(false);
         btnSee.setEnabled(true);
         txtQuestionMark.setVisibility(View.VISIBLE);
+        imgResult.setVisibility(View.GONE);
         imgTick.setVisibility(View.GONE);
         imgWarning.setVisibility(View.GONE);
         txtReco.setText("");
@@ -381,8 +408,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     public void onBtnSeeClicked() {
         if (!isScanning.get()) {
             runOnUiThread(() -> btnSee.setEnabled(false));
-            scanObject();
+            QiThreadPool.run(() -> goToBookmark("dontMove"));
         }
+    }
+
+    @OnClick(R.id.btn_again)
+    public void onBtnAgainClicked() {
+        isScanning.set(false);
+        readyToScanAgain();
     }
 
     @OnClick(R.id.img_home)
