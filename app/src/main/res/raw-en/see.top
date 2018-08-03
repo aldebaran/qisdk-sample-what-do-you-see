@@ -5,9 +5,9 @@ concept:(see) ["what do you see"]
 proposal: %briefing You can show me an object at the height of my tablet, and I will say what I recognize ^enableThenGoto(callToAction)
 proposal: %callToAction Tell me, "what do you see", when you are ready %endAction
 proposal: %dontMove Don't move! %endMove
-proposal: %again If you want to try again, touch try again on my tablet!%endAgain
-proposal: %tryAgain Ok let's try again! ^enableThenGoto(callToAction)
-proposal: %classify Maybe it's $object!
+proposal: %again If you want to try again, touch try again on my tablet!
+proposal: %tryAgain Ok let's try again! %endAgain
+proposal: %classify Maybe it's $object! ^enableThenGoto(again)
 
 u:(~see) Get it! ^enableThenGoto(dontMove)
 
