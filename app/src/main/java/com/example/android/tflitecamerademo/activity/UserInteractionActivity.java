@@ -6,38 +6,38 @@ import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldebaran.qi.Consumer;
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.ChatBuilder;
-import com.aldebaran.qi.sdk.builder.HolderBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TakePictureBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.core.QiThreadPool;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.camera.TakePicture;
-import com.aldebaran.qi.sdk.object.conversation.AutonomousReactionImportance;
-import com.aldebaran.qi.sdk.object.conversation.AutonomousReactionValidity;
-import com.aldebaran.qi.sdk.object.conversation.BodyLanguageOption;
 import com.aldebaran.qi.sdk.object.conversation.Bookmark;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
-import com.aldebaran.qi.sdk.object.holder.AutonomousAbilitiesType;
 import com.aldebaran.qi.sdk.object.holder.Holder;
 import com.aldebaran.qi.sdk.object.image.EncodedImage;
 import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.example.android.tflitecamerademo.RobotUtils;
 import com.example.android.tflitecamerademo.tf.Classifier;
-import com.example.android.tflitecamerademo.tf.TensorFlowImageClassifier;
+import com.example.android.tflitecamerademo.tf.ImageClassifier;
 import com.example.android.tflitecamerademo.tf.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
@@ -50,40 +50,37 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks {
+import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_MEAN;
+import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_STD;
+import static com.example.android.tflitecamerademo.tf.Constant.INPUT_NAME;
+import static com.example.android.tflitecamerademo.tf.Constant.INPUT_SIZE;
+import static com.example.android.tflitecamerademo.tf.Constant.LABEL_FILE;
+import static com.example.android.tflitecamerademo.tf.Constant.MODEL_FILE;
+import static com.example.android.tflitecamerademo.tf.Constant.OUTPUT_NAME;
+
+public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";
 
-    @BindView(R.id.img_cross)
-    ImageView imgCross;
-    @BindView(R.id.txt_question_mark)
-    TextView txtQuestionMark;
+    @BindView(R.id.img_question)
+    ImageView imgQuestion;
     @BindView(R.id.img_pepper)
     ImageView imgPepper;
-    @BindView(R.id.btn_see)
-    TextView btnSee;
-    @BindView(R.id.btn_again)
-    TextView btnAgain;
-    @BindView(R.id.img_home)
-    ImageView imgHome;
     @BindView(R.id.img_warning)
     ImageView imgWarning;
-    @BindView(R.id.img_tick)
-    ImageView imgTick;
+    @BindView(R.id.img_valid)
+    ImageView imgValid;
+    @BindView(R.id.btn_see)
+    TextView btnSee;
     @BindView(R.id.flash_ctn)
     ImageView flashCtn;
     @BindView(R.id.img_result)
     ImageView imgResult;
-    @BindView(R.id.txt_reco)
-    TextView txtReco;
-
-    private static final int INPUT_SIZE = 224;
-    private static final int IMAGE_MEAN = 117;
-    private static final float IMAGE_STD = 1;
-    private static final String INPUT_NAME = "input";
-    private static final String OUTPUT_NAME = "output";
-    private static final String MODEL_FILE = "file:///android_asset/tensorflow_inception_graph.pb";
-    private static final String LABEL_FILE = "file:///android_asset/imagenet_comp_graph_label_strings.txt";
-
+    @BindView(R.id.btn_again)
+    TextView btnAgain;
+    @BindView(R.id.img_cross)
+    ImageView imgCross;
+    @BindView(R.id.img_home)
+    ImageView imgHome;
 
     int countError = 0;
     AtomicBoolean isScanning = new AtomicBoolean(false);
@@ -101,7 +98,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     Map<String, Bookmark> bookmarks;
     Future<Void> futureChat;
     Future<TakePicture> futurePicture;
-
+    Classifier.Recognition heightRecognition;
 
     //region Lifecycle
     @Override
@@ -131,7 +128,15 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     protected void onDestroy() {
-        QiThreadPool.run(this::releaseRobot);
+        QiThreadPool.run(() ->
+                RobotUtils.releaseRobot(
+                        getParent(),
+                        pepperHolder,
+                        qiChatbot,
+                        chat,
+                        futureChat,
+                        futurePicture,
+                        null));
         super.onDestroy();
     }
     //endregion
@@ -140,39 +145,13 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void setupRobot() {
         createChatBot();
 
-        freezeRobot();
+        pepperHolder = RobotUtils.freezeRobot(qiContext, pepperHolder, qiChatbot, chat);
 
         futurePicture = TakePictureBuilder.with(qiContext).buildAsync();
 
         runBriefing();
     }
 
-    private void runBriefing() {
-        if (this.qiContext == null)
-            return;
-
-        goToBookmark("briefing");
-
-        if (futureChat == null
-                || futureChat.isCancelled())
-            futureChat = chat.async().run();
-    }
-
-    private void runCallToAction() {
-        if (qiContext == null)
-            return;
-
-        runOnUiThread(() -> {
-            playerStart.start();
-            btnSee.setVisibility(View.VISIBLE);
-            timer.start();
-        });
-    }
-
-
-    //endregion
-
-    //region Robot
     private void createChatBot() {
         if (qiContext == null)
             return;
@@ -193,133 +172,146 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .withChatbot(qiChatbot)
                 .build();
 
-        chat.addOnHeardListener(heardPhrase -> runOnUiThread(() -> timer.cancel()));
-
-        qiChatbot.addOnBookmarkReachedListener(bookmark -> {
-            if ("endAction".equals(bookmark.getName())) {
-                runCallToAction();
-            } else if ("endMove".equals(bookmark.getName())) {
-                if (!isScanning.get()) {
-                    scanObject();
-                }
-            } else if ("endAgain".equals(bookmark.getName())) {
-                runOnUiThread(() -> btnAgain.setVisibility(View.VISIBLE));
-            }
-        });
-
-        chat.addOnFallbackReplyFoundForListener(input -> {
-            timer.cancel();
-            countError++;
-            if (countError > 3) {
-                countError = 0;
-                goToBookmark("briefing");
-            }
-        });
+        chat.addOnHeardListener(this);
+        qiChatbot.addOnBookmarkReachedListener(this);
     }
 
-    private Future<Void> goToBookmark(String bookmarkKey) {
-        return qiChatbot.async().goToBookmark(bookmarks.get(bookmarkKey),
-                AutonomousReactionImportance.HIGH,
-                AutonomousReactionValidity.IMMEDIATE);
+    private void runBriefing() {
+        if (this.qiContext == null)
+            return;
+
+        runOnUiThread(this::layoutBriefing);
+
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, "briefing");
+
+        if (futureChat == null
+                || futureChat.isCancelled())
+            futureChat = chat.async().run();
     }
 
-    private void freezeRobot() {
-        //TODO set animation to pepper arms
+    private void runCallToAction() {
+        if (qiContext == null)
+            return;
 
-        pepperHolder = HolderBuilder.with(qiContext)
-                .withAutonomousAbilities(AutonomousAbilitiesType.BACKGROUND_MOVEMENT, AutonomousAbilitiesType.BASIC_AWARENESS)
-                .build();
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, "callToAction").andThenConsume(aVoid -> runOnUiThread(() -> {
+            playerStart.start();
+            timer.start();
+            layoutCallToAction();
+        }));
+    }
+    //endregion
 
+    //regionLayout
+    private void layoutBriefing() {
+        isScanning.set(false);
+
+        colorTopButtons(android.R.color.black);
+        imgQuestion.setVisibility(View.VISIBLE);
+        imgPepper.setVisibility(View.VISIBLE);
+        imgWarning.setVisibility(View.GONE);
+        imgValid.setVisibility(View.GONE);
+        btnSee.setVisibility(View.GONE);
+        flashCtn.setVisibility(View.GONE);
+        imgResult.setVisibility(View.GONE);
+        btnAgain.setVisibility(View.GONE);
+        imgHome.setVisibility(View.GONE);
+
+        btnSee.setEnabled(true);
+        btnAgain.setEnabled(true);
+    }
+
+    private void layoutCallToAction() {
+        isScanning.set(false);
+
+        colorTopButtons(android.R.color.black);
+        imgQuestion.setVisibility(View.VISIBLE);
+        imgPepper.setVisibility(View.VISIBLE);
+        imgWarning.setVisibility(View.GONE);
+        imgValid.setVisibility(View.GONE);
+        flashCtn.setVisibility(View.GONE);
+        imgResult.setVisibility(View.GONE);
+        btnAgain.setVisibility(View.GONE);
+        imgHome.setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.SlideInUp)
+                .duration(500)
+                .onStart(animator -> btnSee.setVisibility(View.VISIBLE))
+                .playOn(btnSee);
+
+        btnSee.setEnabled(true);
+        btnAgain.setEnabled(true);
+    }
+
+    private void layoutScan() {
+        isScanning.set(true);
         pepperHolder.hold();
 
-        qiChatbot.setSpeakingBodyLanguage(BodyLanguageOption.DISABLED);
-        chat.setListeningBodyLanguage(BodyLanguageOption.DISABLED);
-    }
-
-    private void releaseRobot() {
-        if (pepperHolder != null) {
-            pepperHolder.async().release();
-        }
-
-        if (chat != null)
-            chat.setListeningBodyLanguage(BodyLanguageOption.NEUTRAL);
-
-        if (qiChatbot != null)
-            qiChatbot.setSpeakingBodyLanguage(BodyLanguageOption.NEUTRAL);
-
-        stopChat(null);
-
-        unregisterListener();
-
-        QiSDK.unregister(this);
-    }
-
-    private void stopChat(Runnable runnable) {
-        if (futureChat != null
-                && !futureChat.isCancelled()
-                && !futureChat.isDone()) {
-            futureChat.thenConsume(voidFuture -> {
-                if (voidFuture.isCancelled()
-                        || voidFuture.hasError())
-                    if (runnable != null)
-                        runnable.run();
+        runOnUiThread(() -> {
+            layoutCaptureMove(false);
+            playerFlash.setOnCompletionListener(mp -> {
+                layoutCaptureMove(true);
+                YoYo.with(Techniques.Flash)
+                        .duration(50)
+                        .onStart(animator -> flashCtn.setVisibility(View.VISIBLE))
+                        .onEnd(animator -> flashCtn.setVisibility(View.GONE))
+                        .playOn(flashCtn);
             });
-            futureChat.requestCancellation();
-        }
-        if (futurePicture != null
-                && !futurePicture.isCancelled()
-                && !futurePicture.isDone()) {
-            futurePicture.thenConsume(voidFuture -> {
-                if (voidFuture.isCancelled()
-                        || voidFuture.hasError())
-                    if (runnable != null)
-                        runnable.run();
-            });
-            futurePicture.requestCancellation();
-        } else {
-            if (runnable != null)
-                runnable.run();
-        }
+            playerFlash.start();
+        });
     }
 
-    private void unregisterListener() {
-        if (chat != null) {
-            chat.async().removeAllOnFallbackReplyFoundForListeners();
-        }
-        if (qiChatbot != null) {
-            qiChatbot.async().removeAllOnBookmarkReachedListeners();
-            qiChatbot.async().removeAllOnEndedListeners();
-        }
+    private void layoutCaptureMove(boolean showValid) {
+        colorTopButtons(android.R.color.black);
+        imgQuestion.setVisibility(View.INVISIBLE);
+        imgPepper.setVisibility(View.VISIBLE);
+        btnSee.setVisibility(View.GONE);
+        flashCtn.setVisibility(View.GONE);
+        imgResult.setVisibility(View.GONE);
+        btnAgain.setVisibility(View.GONE);
+        imgHome.setVisibility(View.VISIBLE);
+        imgWarning.setVisibility((showValid) ? View.GONE : View.VISIBLE);
+        imgValid.setVisibility((showValid) ? View.VISIBLE : View.GONE);
+
+        btnSee.setEnabled(false);
+    }
+
+    private void layoutResult(Bitmap bitmap) {
+        isScanning.set(false);
+
+        colorTopButtons(android.R.color.white);
+        imgResult.setImageBitmap(bitmap);
+        YoYo.with(Techniques.FadeIn)
+                .duration(500)
+                .onStart(animator -> imgResult.setVisibility(View.VISIBLE))
+                .onEnd(animator -> {
+                    imgQuestion.setVisibility(View.INVISIBLE);
+                    imgPepper.setVisibility(View.GONE);
+                    imgWarning.setVisibility(View.GONE);
+                    imgValid.setVisibility(View.GONE);
+                    btnSee.setVisibility(View.GONE);
+                    flashCtn.setVisibility(View.GONE);
+                    imgHome.setVisibility(View.VISIBLE);
+                    btnAgain.setVisibility(View.VISIBLE);
+                    YoYo.with(Techniques.SlideInUp)
+                            .duration(500)
+                            .onEnd(animator1 -> QiThreadPool.run(() -> {
+                                pepperHolder.release();
+                            }))
+                            .playOn(btnAgain);
+                })
+                .playOn(imgResult);
+
+        btnSee.setEnabled(false);
+    }
+
+    private void colorTopButtons(@ColorRes int color) {
+        imgCross.setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_IN);
+        imgHome.setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_IN);
     }
     //endregion
 
     //region TensorFlow
-    private void prepareToScan() {
-        isScanning.set(true);
-
-        pepperHolder.hold();
-
-        runOnUiThread(() -> {
-            imgWarning.setVisibility(View.VISIBLE);
-            txtQuestionMark.setVisibility(View.GONE);
-        });
-
-        runOnUiThread(() -> {
-            flashCtn.setVisibility(View.VISIBLE);
-            imgWarning.setVisibility(View.GONE);
-            playerFlash.start();
-            flashCtn.setVisibility(View.GONE);
-            imgTick.setVisibility(View.VISIBLE);
-            btnAgain.setVisibility(View.GONE);
-            imgResult.setVisibility(View.GONE);
-            btnSee.setVisibility(View.GONE);
-        });
-    }
-
     private void scanObject() {
-        runOnUiThread(() -> btnSee.setEnabled(false));
-
-        prepareToScan();
+        layoutScan();
 
         Future<TimestampedImageHandle> timestampedImageHandleFuture = futurePicture.andThenCompose(takePicture -> {
             Log.i(TAG, "take picture launched!");
@@ -351,10 +343,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     public void classifyImage(Bitmap bitmap) {
-        Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
-
         Classifier classifier =
-                TensorFlowImageClassifier.create(
+                ImageClassifier.create(
                         getAssets(),
                         MODEL_FILE,
                         LABEL_FILE,
@@ -364,71 +354,44 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                         INPUT_NAME,
                         OUTPUT_NAME);
 
-        final List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
+        Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
+        heightRecognition = new Classifier.Recognition("test", "testObject", 0.0f, null);
 
-        Classifier.Recognition highReco = new Classifier.Recognition("test", "testObject", 0.0f, null);
-
-        QiThreadPool.run(() -> pepperHolder.release());
-
-        showResultScreen(Utils.getResizedBitmap(bitmap, 1400, 900, true));
+        layoutResult(Utils.getResizedBitmap(bitmap, 1400, 900, true));
 
         for (Classifier.Recognition recognition :
                 results) {
 
-            if (recognition.getConfidence() > highReco.getConfidence())
-                highReco = recognition;
+            if (recognition.getConfidence() > heightRecognition.getConfidence())
+                heightRecognition = recognition;
 
-            txtReco.setText(highReco.getTitle() + " : " + highReco.getConfidence() * 100);
+            if (heightRecognition.getConfidence() * 100 > 20) {
 
-            if (highReco.getConfidence() * 100 > 20) {
+                String name = heightRecognition.getTitle();
 
-                String recoName = highReco.getTitle();
-
-                QiThreadPool.run(() -> {
-                    qiChatbot.variable("object").setValue(recoName);
-                    goToBookmark("classify");
-                });
+                QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "classify", name).getValue());
+                Log.d(TAG, "classifyImage: " + name);
+            } else {
+                QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "again", null).getValue());
             }
         }
-
-        QiThreadPool.run(() -> {
-            goToBookmark("again");
-        });
-    }
-
-    private void showResultScreen(Bitmap bitmap) {
-        imgResult.setImageBitmap(bitmap);
-        imgResult.setVisibility(View.VISIBLE);
-        imgCross.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
-        imgHome.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
-    }
-
-    private void readyToScanAgain() {
-        runOnUiThread(() -> {
-            prepareLayoutForScan();
-            btnAgain.setVisibility(View.VISIBLE);
-            QiThreadPool.run(() -> goToBookmark("tryAgain"));
-        });
-    }
-
-    private void prepareLayoutForScan() {
         isScanning.set(false);
-        btnSee.setEnabled(true);
-        btnAgain.setEnabled(true);
-        imgResult.setVisibility(View.GONE);
-        imgTick.setVisibility(View.GONE);
-        imgWarning.setVisibility(View.GONE);
-        txtQuestionMark.setVisibility(View.VISIBLE);
-        txtReco.setText("");
     }
-
     //endregion
 
     //region onClick
     @OnClick(R.id.img_cross)
     public void onImgCrossClicked() {
-        QiThreadPool.run(this::releaseRobot);
-        finishAffinity();
+        QiThreadPool.run(() ->
+                RobotUtils.releaseRobot(
+                        getParent(),
+                        pepperHolder,
+                        qiChatbot,
+                        chat,
+                        futureChat,
+                        futurePicture,
+                        this::finishAffinity));
     }
 
     @OnClick(R.id.btn_see)
@@ -436,20 +399,19 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (!isScanning.get()) {
             timer.cancel();
             runOnUiThread(() -> btnSee.setEnabled(false));
-            QiThreadPool.run(() -> goToBookmark("dontMove"));
+            QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "dontMove").getValue());
         }
     }
 
     @OnClick(R.id.btn_again)
     public void onBtnAgainClicked() {
-        isScanning.set(false);
-        readyToScanAgain();
+        QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "tryAgain").getValue());
     }
 
     @OnClick(R.id.img_home)
     public void onViewClicked() {
-        prepareLayoutForScan();
-        QiThreadPool.run(() -> goToBookmark("briefing"));
+        layoutBriefing();
+        QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "briefing"));
     }
     //endregion
 
@@ -462,7 +424,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     public void onRobotFocusLost() {
-        releaseRobot();
+        RobotUtils.releaseRobot(getParent(), pepperHolder, qiChatbot, chat, futureChat, futurePicture, null);
         this.qiContext = null;
     }
 
@@ -470,6 +432,28 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     public void onRobotFocusRefused(String reason) {
         //NOT USED IN THIS CASE
         Log.e(TAG, "onRobotFocusRefused: " + reason);
+    }
+    //endregion
+
+    //region Chat Callback
+    @Override
+    public void onHeard(Phrase heardPhrase) {
+        runOnUiThread(() -> timer.cancel());
+    }
+
+    @Override
+    public void onBookmarkReached(Bookmark bookmark) {
+        if ("endBriefing".equals(bookmark.getName())) {
+            runCallToAction();
+        } else if ("dontMove".equals(bookmark.getName())) {
+            runOnUiThread(() -> layoutCaptureMove(false));
+        } else if ("endMove".equals(bookmark.getName())) {
+            if (!isScanning.get()) {
+                scanObject();
+            }
+        } else if ("endAgain".equals(bookmark.getName())) {
+            runCallToAction();
+        }
     }
     //endregion
 }

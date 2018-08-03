@@ -1,5 +1,6 @@
 package com.example.android.tflitecamerademo.activity;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.util.Locale;
@@ -28,7 +31,7 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
 
     @BindView(R.id.img_cross)
     ImageView imgCross;
-    @BindView(R.id.animation_view)
+    @BindView(R.id.lottie_loader)
     LottieAnimationView animationView;
 
     //region Lifecycle
@@ -97,7 +100,13 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
                 .build();
 
         say.run();
-        goToIntroduction();
+
+        runOnUiThread(() -> YoYo.with(Techniques.FadeOut).onEnd(new YoYo.AnimatorCallback() {
+            @Override
+            public void call(Animator animator) {
+                goToIntroduction();
+            }
+        }).playOn(animationView));
     }
 
     @Override

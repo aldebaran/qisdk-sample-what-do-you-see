@@ -1,14 +1,14 @@
 topic: ~see()
 
-concept:(see) ["what do you see"]
+concept:(see) ["what [do you] see"]
 
-proposal: %briefing You can show me an object at the height of my tablet, and I will say what I recognize ^enableThenGoto(callToAction)
-proposal: %callToAction Tell me, "what do you see", when you are ready %endAction
-proposal: %dontMove Don't move! %endMove
+proposal: %briefing You can show me an object at the height of my tablet, and I will say what I recognize %endBriefing
 proposal: %again If you want to try again, touch try again on my tablet!
 proposal: %tryAgain Ok let's try again! %endAgain
 proposal: %classify Maybe it's $object! ^enableThenGoto(again)
+proposal: %dontMove Don't move! %endMove
 
-u:(~see) Get it! ^enableThenGoto(dontMove)
+proposal: %callToAction Tell me, "what do you see", when you are ready
+    u1:(~see) Get it! ^enableThenGoto(dontMove)
+    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat
 
-u:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat

@@ -11,6 +11,8 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import butterknife.BindView;
@@ -59,6 +61,7 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
                 .withResource(R.string.intro_speak_text)
                 .build();
         say.run();
+
 
         goToUserInteraction();
     }
