@@ -25,7 +25,7 @@
         android:id="@+id/img_cross"
         android:layout_width="48dip"
         android:layout_height="48dip"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_margin="16dp"
         android:src="@drawable/ic_cross" />
