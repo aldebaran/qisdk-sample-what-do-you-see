@@ -1,6 +1,5 @@
 package com.example.android.tflitecamerademo.activity;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -39,6 +38,9 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /**
+         * Put the Activity in fullscreen mode
+         */
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -66,6 +68,10 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
     }
     //endregion
 
+    /**
+     * Check the language, if it's english go to Introduction Activity if
+     * not show the language settings to switch
+     */
     private void checkLanguage() {
         if (!Locale.getDefault().getDisplayLanguage().equals(getString(R.string.language))) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -81,18 +87,30 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
         }
     }
 
+
+    /**
+     * Show the Introduction's Activity and finish this one
+     */
     private void goToIntroduction() {
         Intent mainIntent = new Intent(SplashScreenActivity.this, IntroductionActivity.class);
         SplashScreenActivity.this.startActivity(mainIntent);
         SplashScreenActivity.this.finish();
     }
 
+    /**
+     * Close the app
+     */
     @OnClick(R.id.img_cross)
     public void onViewClicked() {
         this.finish();
     }
 
     //region RobotCallback
+    /**
+     * Say when it's ready and show the introduction's Activity
+     *
+     * @param qiContext the current {@link QiContext} of the robot
+     */
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
@@ -101,12 +119,7 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
 
         say.run();
 
-        runOnUiThread(() -> YoYo.with(Techniques.FadeOut).onEnd(new YoYo.AnimatorCallback() {
-            @Override
-            public void call(Animator animator) {
-                goToIntroduction();
-            }
-        }).playOn(animationView));
+        runOnUiThread(() -> YoYo.with(Techniques.FadeOut).onEnd(animator -> goToIntroduction()).playOn(animationView));
     }
 
     @Override

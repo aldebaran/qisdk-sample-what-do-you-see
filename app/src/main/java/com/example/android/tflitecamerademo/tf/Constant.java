@@ -1,7 +1,9 @@
 package com.example.android.tflitecamerademo.tf;
 
+/**
+ * The constant class for TensorFlow
+ */
 public class Constant {
-
     public static final int INPUT_SIZE = 224;
     public static final int IMAGE_MEAN = 117;
     public static final float IMAGE_STD = 1;

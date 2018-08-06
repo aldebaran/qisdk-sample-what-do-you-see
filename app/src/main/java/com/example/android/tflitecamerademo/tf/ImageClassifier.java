@@ -108,6 +108,11 @@ public class ImageClassifier implements Classifier {
         return c;
     }
 
+    /**
+     * Classify a bitmap
+     * @param bitmap the {@link Bitmap} to analyse
+     * @return a list of {@link com.example.android.tflitecamerademo.tf.Classifier.Recognition} object
+     */
     @Override
     public List<Recognition> recognizeImage(final Bitmap bitmap) {
         // Log this method so that it can be analyzed with systrace.

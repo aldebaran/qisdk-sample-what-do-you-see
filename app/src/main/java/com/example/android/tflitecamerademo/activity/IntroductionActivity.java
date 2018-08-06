@@ -11,8 +11,6 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Say;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import butterknife.BindView;
@@ -43,11 +41,17 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     }
     //endregion
 
+    /**
+     * Close the app
+     */
     @OnClick(R.id.img_cross)
     public void onViewClicked() {
         this.finish();
     }
 
+    /**
+     * Show the UserInteraction's Activity and finish this one
+     */
     private void goToUserInteraction() {
         Intent mainIntent = new Intent(IntroductionActivity.this, UserInteractionActivity.class);
         IntroductionActivity.this.startActivity(mainIntent);
@@ -55,6 +59,12 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     }
 
     //region RobotCallback
+
+    /**
+     * Say the introduction and show the userInteraction's activity
+     *
+     * @param qiContext the current {@link QiContext} of the robot
+     */
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
