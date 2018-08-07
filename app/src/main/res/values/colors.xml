@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  Copyright 2015 The Android Open Source Project
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +14,13 @@
  limitations under the License.
 -->
 <resources>
-    <color name="control_background">#cc4285f4</color>
+    <color name="colorPrimary">#00D7FD</color>
+    <color name="colorPrimaryDark">#0F9FDF</color>
+    <color name="colorAccent">#D8D1E7</color>
+
+    <color name="white">#FFFF</color>
+    <color name="grey_button">#FAFAFA</color>
+    <color name="grey_border_button">#80212121</color>
+    <color name="green_button_clicked">#41A94A</color>
+    <color name="green_button_touch">#1B5E20</color>
 </resources>
