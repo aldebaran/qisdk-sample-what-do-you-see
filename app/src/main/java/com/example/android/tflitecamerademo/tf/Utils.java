@@ -5,6 +5,14 @@ import android.graphics.Matrix;
 
 public class Utils {
 
+    /**
+     * Resize a given Bitmap into another one
+     * @param bm the {@link Bitmap} to resize
+     * @param newWidth the new width of the bitmap
+     * @param newHeight the new height of the bitmap
+     * @param recycle if you want to recycle the bitmap
+     * @return the resized {@link Bitmap}
+     */
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean recycle) {
         int width = bm.getWidth();
         int height = bm.getHeight();

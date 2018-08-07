@@ -41,11 +41,17 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     }
     //endregion
 
+    /**
+     * Close the app
+     */
     @OnClick(R.id.img_cross)
     public void onViewClicked() {
         this.finish();
     }
 
+    /**
+     * Show the UserInteraction's Activity and finish this one
+     */
     private void goToUserInteraction() {
         Intent mainIntent = new Intent(IntroductionActivity.this, UserInteractionActivity.class);
         IntroductionActivity.this.startActivity(mainIntent);
@@ -53,12 +59,19 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     }
 
     //region RobotCallback
+
+    /**
+     * Say the introduction and show the userInteraction's activity
+     *
+     * @param qiContext the current {@link QiContext} of the robot
+     */
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         Say say = SayBuilder.with(qiContext)
                 .withResource(R.string.intro_speak_text)
                 .build();
         say.run();
+
 
         goToUserInteraction();
     }

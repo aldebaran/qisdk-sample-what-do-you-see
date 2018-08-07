@@ -6,5 +6,5 @@
     <item android:drawable="@drawable/green_dark_round_background"
         android:state_pressed="true" />
 
-    <item android:drawable="@drawable/grey_round_background" />
+    <item android:drawable="@drawable/grey_border_round_background" />
 </selector>

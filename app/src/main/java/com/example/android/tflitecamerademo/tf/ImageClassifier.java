@@ -16,8 +16,8 @@ import org.tensorflow.Operation;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 /** A classifier specialized to label images using TensorFlow. */
-public class TensorFlowImageClassifier implements Classifier {
-    private static final String TAG = "TensorFlowImageClassifier";
+public class ImageClassifier implements Classifier {
+    private static final String TAG = "ImageClassifier";
 
     // Only return this many results with at least this confidence.
     private static final int MAX_RESULTS = 3;
@@ -41,7 +41,7 @@ public class TensorFlowImageClassifier implements Classifier {
 
     private TensorFlowInferenceInterface inferenceInterface;
 
-    private TensorFlowImageClassifier() {}
+    private ImageClassifier() {}
 
     /**
      * Initializes a native TensorFlow session for classifying images.
@@ -65,7 +65,7 @@ public class TensorFlowImageClassifier implements Classifier {
             float imageStd,
             String inputName,
             String outputName) {
-        TensorFlowImageClassifier c = new TensorFlowImageClassifier();
+        ImageClassifier c = new ImageClassifier();
         c.inputName = inputName;
         c.outputName = outputName;
 
@@ -108,6 +108,11 @@ public class TensorFlowImageClassifier implements Classifier {
         return c;
     }
 
+    /**
+     * Classify a bitmap
+     * @param bitmap the {@link Bitmap} to analyse
+     * @return a list of {@link com.example.android.tflitecamerademo.tf.Classifier.Recognition} object
+     */
     @Override
     public List<Recognition> recognizeImage(final Bitmap bitmap) {
         // Log this method so that it can be analyzed with systrace.
