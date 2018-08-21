@@ -88,6 +88,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     MediaPlayer playerStart;
     MediaPlayer playerFlash;
+    MediaPlayer playerSuccess;
 
     QiContext qiContext;
     Holder pepperHolder;
@@ -110,8 +111,9 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         ButterKnife.bind(this);
         QiSDK.register(this, this);
 
-        playerStart = MediaPlayer.create(this, R.raw.mariocoin);
+        playerStart = MediaPlayer.create(this, R.raw.ready_sound);
         playerFlash = MediaPlayer.create(this, R.raw.automatic_camera);
+        playerSuccess = MediaPlayer.create(this, R.raw.success_sound);
 
         timer = new CountDownTimer(10000, 1000) {
             @Override
@@ -375,6 +377,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
             } else {
                 QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "again", null).getValue());
             }
+        playerSuccess.start();
         }
         isScanning.set(false);
     }
