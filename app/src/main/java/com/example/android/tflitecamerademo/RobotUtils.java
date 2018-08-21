@@ -28,15 +28,14 @@ public class RobotUtils {
      * Freeze the movement of the robot
      *
      * @param qiContext the current {@link QiContext}
-     * @param holder    the robot {@link Holder}
      * @param chatbot   the current {@link QiChatbot}
      * @param chat      the current {@link Chat}
-     * @return
+     * @return the {@link Holder} created
      */
-    public static Holder freezeRobot(@NonNull QiContext qiContext, Holder holder, QiChatbot chatbot, Chat chat) {
+    public static Holder freezeRobot(@NonNull QiContext qiContext, QiChatbot chatbot, Chat chat) {
         //TODO set animation to pepper arms
 
-        holder = HolderBuilder.with(qiContext)
+        Holder holder = HolderBuilder.with(qiContext)
                 .withAutonomousAbilities(AutonomousAbilitiesType.BACKGROUND_MOVEMENT, AutonomousAbilitiesType.BASIC_AWARENESS)
                 .build();
 
@@ -56,7 +55,26 @@ public class RobotUtils {
     /**
      * Release the robot's movement
      *
-     * @param activity      the current {@link Activity}
+     * @param holder        the current robot {@link Holder}
+     * @param chatBot       the current {@link QiChatbot}
+     * @param chat          the current {@link Chat}
+     * @param futureChat    the {@link Future} of the {@link Chat}
+     * @param futurePicture the {@link Future} of the taking picture function
+     */
+    public static void releaseRobot(Holder holder,
+                                    QiChatbot chatBot,
+                                    Chat chat,
+                                    Future<Void> futureChat,
+                                    Future<TakePicture> futurePicture,
+                                    boolean stopChat,
+                                    boolean unregisterListener) {
+        releaseRobot(holder, chatBot, chat, futureChat, futurePicture, stopChat,unregisterListener, null);
+
+    }
+
+    /**
+     * Release the robot's movement
+     *
      * @param holder        the current robot {@link Holder}
      * @param chatBot       the current {@link QiChatbot}
      * @param chat          the current {@link Chat}
@@ -64,12 +82,13 @@ public class RobotUtils {
      * @param futurePicture the {@link Future} of the taking picture function
      * @param runnable      a {@link Runnable} to run after the cancellation
      */
-    public static void releaseRobot(@NonNull Activity activity,
-                                    Holder holder,
+    public static void releaseRobot(Holder holder,
                                     QiChatbot chatBot,
                                     Chat chat,
                                     Future<Void> futureChat,
                                     Future<TakePicture> futurePicture,
+                                    boolean stopChat,
+                                    boolean unregisterListener,
                                     Runnable runnable) {
         if (holder != null) {
             holder.async().release();
@@ -81,14 +100,17 @@ public class RobotUtils {
         if (chatBot != null)
             chatBot.setSpeakingBodyLanguage(BodyLanguageOption.NEUTRAL);
 
-        stopChat(futureChat, futurePicture, runnable);
+        if (stopChat)
+            stopChat(futureChat, futurePicture, runnable);
 
-        unregisterListener(chatBot, chat);
+        if (unregisterListener)
+            unregisterListener(chatBot, chat);
     }
 
     /**
      * Stop the current chat of the robot
-     * @param futureChat the current {@link Future} of the chat
+     *
+     * @param futureChat    the current {@link Future} of the chat
      * @param futurePicture
      * @param runnable
      */
