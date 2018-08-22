@@ -22,6 +22,7 @@ import com.aldebaran.qi.sdk.builder.TakePictureBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.core.QiThreadPool;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
 import com.aldebaran.qi.sdk.object.camera.TakePicture;
 import com.aldebaran.qi.sdk.object.conversation.Bookmark;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
@@ -106,6 +107,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_user_interaction);
+
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.ALWAYS);
 
         ButterKnife.bind(this);
         QiSDK.register(this, this);

@@ -10,6 +10,7 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
@@ -27,6 +28,8 @@ public class IntroductionActivity extends RobotActivity implements RobotLifecycl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.OVERLAY);
 
         setContentView(R.layout.activity_intro);
         ButterKnife.bind(this);
