@@ -1,14 +1,22 @@
 topic: ~see()
 
-concept:(see) ["what [do you] see"]
+concept:(see) ["what [do you] see" "what do you see" "what is it" "classify this" Recognize]
+concept:(again) ["Let's do it again" again redo]
 
-proposal: %briefing You can show me an object at the height of my tablet, and I will say what I recognize %endBriefing
-proposal: %again If you want to try again, touch try again on my tablet!
-proposal: %tryAgain Ok let's try again! %endAgain
-proposal: %classify Maybe it's $object! ^enableThenGoto(again)
+proposal: %briefing Show me an object in front of my eyes, and I will show you what I recognize %endBriefing
 proposal: %dontMove Don't move! %endMove
+proposal: %classify20 Maybe it's $object! ^enableThenGoto(again)
+proposal: %classify50 I think it's $object! ^enableThenGoto(again)
+proposal: %classify70 It's $object! ^enableThenGoto(again)
+proposal: %classify90 I'm sure it's $object! ^enableThenGoto(again)
+proposal: %failClassify I didn't recognize anything ^enableThenGoto(again)
+
 
 proposal: %callToAction Tell me, "what do you see", when you are ready
     u1:(~see) Get it! ^enableThenGoto(dontMove)
+    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat
+
+proposal: %again If you want to try again, show me something and tell me %endAgain
+    u1:(~again) %tryAgain Ok let's try again! %endTryAgain
     u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat
 

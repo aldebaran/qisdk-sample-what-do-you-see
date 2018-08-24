@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldebaran.qi.Consumer;
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
@@ -23,6 +22,7 @@ import com.aldebaran.qi.sdk.builder.TakePictureBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.core.QiThreadPool;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
 import com.aldebaran.qi.sdk.object.camera.TakePicture;
 import com.aldebaran.qi.sdk.object.conversation.Bookmark;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
@@ -82,12 +82,13 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     @BindView(R.id.img_home)
     ImageView imgHome;
 
-    int countError = 0;
     AtomicBoolean isScanning = new AtomicBoolean(false);
+    AtomicBoolean isFirstTime = new AtomicBoolean(true);
     CountDownTimer timer;
 
     MediaPlayer playerStart;
     MediaPlayer playerFlash;
+    MediaPlayer playerSuccess;
 
     QiContext qiContext;
     Holder pepperHolder;
@@ -98,7 +99,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     Map<String, Bookmark> bookmarks;
     Future<Void> futureChat;
     Future<TakePicture> futurePicture;
-    Classifier.Recognition heightRecognition;
+    Classifier.Recognition bestRecognition;
 
     //region Lifecycle
     @Override
@@ -107,13 +108,16 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         setContentView(R.layout.activity_user_interaction);
 
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.ALWAYS);
+
         ButterKnife.bind(this);
         QiSDK.register(this, this);
 
-        playerStart = MediaPlayer.create(this, R.raw.mariocoin);
+        playerStart = MediaPlayer.create(this, R.raw.ready_sound);
         playerFlash = MediaPlayer.create(this, R.raw.automatic_camera);
+        playerSuccess = MediaPlayer.create(this, R.raw.success_sound);
 
-        timer = new CountDownTimer(10000, 1000) {
+        timer = new CountDownTimer(15000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -130,13 +134,13 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     protected void onDestroy() {
         QiThreadPool.run(() ->
                 RobotUtils.releaseRobot(
-                        getParent(),
                         pepperHolder,
                         qiChatbot,
                         chat,
                         futureChat,
                         futurePicture,
-                        null));
+                        true,
+                        true));
         super.onDestroy();
     }
     //endregion
@@ -144,8 +148,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     //region Flow
     private void setupRobot() {
         createChatBot();
-
-        pepperHolder = RobotUtils.freezeRobot(qiContext, pepperHolder, qiChatbot, chat);
 
         futurePicture = TakePictureBuilder.with(qiContext).buildAsync();
 
@@ -193,11 +195,16 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         if (qiContext == null)
             return;
 
-        RobotUtils.goToBookmark(qiChatbot, bookmarks, "callToAction").andThenConsume(aVoid -> runOnUiThread(() -> {
-            playerStart.start();
-            timer.start();
-            layoutCallToAction();
-        }));
+        runOnUiThread(this::layoutCallToAction);
+
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, "callToAction")
+                .andThenConsume(aVoid -> runOnUiThread(() -> {
+                    playerStart.start();
+                    if (isFirstTime.get()) {
+                        timer.start();
+                        isFirstTime.set(false);
+                    }
+                }));
     }
     //endregion
 
@@ -243,7 +250,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     private void layoutScan() {
         isScanning.set(true);
-        pepperHolder.hold();
+
+        pepperHolder = RobotUtils.freezeRobot(qiContext, qiChatbot, chat);
 
         runOnUiThread(() -> {
             layoutCaptureMove(false);
@@ -293,9 +301,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                     btnAgain.setVisibility(View.VISIBLE);
                     YoYo.with(Techniques.SlideInUp)
                             .duration(500)
-                            .onEnd(animator1 -> QiThreadPool.run(() -> {
-                                pepperHolder.release();
-                            }))
                             .playOn(btnAgain);
                 })
                 .playOn(imgResult);
@@ -356,26 +361,42 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
-        heightRecognition = new Classifier.Recognition("test", "testObject", 0.0f, null);
-
-        layoutResult(Utils.getResizedBitmap(bitmap, 1400, 900, true));
+        bestRecognition = new Classifier.Recognition("test", "testObject", 0.0f, null);
 
         for (Classifier.Recognition recognition :
                 results) {
 
-            if (recognition.getConfidence() > heightRecognition.getConfidence())
-                heightRecognition = recognition;
+            if (recognition.getConfidence() > bestRecognition.getConfidence())
+                bestRecognition = recognition;
 
-            if (heightRecognition.getConfidence() * 100 > 20) {
-
-                String name = heightRecognition.getTitle();
-
-                QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "classify", name).getValue());
-                Log.d(TAG, "classifyImage: " + name);
-            } else {
-                QiThreadPool.run(() -> RobotUtils.goToBookmark(qiChatbot, bookmarks, "again", null).getValue());
-            }
         }
+
+        Log.d(TAG, "classifyImage: " + bestRecognition);
+        layoutResult(Utils.getResizedBitmap(bitmap, 1400, 900, true));
+        QiThreadPool.run(() -> processResult(bestRecognition));
+    }
+
+    private void processResult(Classifier.Recognition recognition) {
+        String name = bestRecognition.getTitle();
+        float confidence = recognition.getConfidence() * 100;
+        String bookmark;
+
+        playerSuccess.start();
+
+        if (confidence > 15 && confidence < 40) {
+            bookmark = "classify20";
+        } else if (confidence > 40 && confidence < 60) {
+            bookmark = "classify50";
+        } else if (confidence > 60 && confidence < 80) {
+            bookmark = "classify70";
+        } else if (confidence > 80) {
+            bookmark = "classify90";
+        } else {
+            bookmark = "failClassify";
+        }
+
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, bookmark, name).getValue();
+
         isScanning.set(false);
     }
     //endregion
@@ -385,12 +406,13 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     public void onImgCrossClicked() {
         QiThreadPool.run(() ->
                 RobotUtils.releaseRobot(
-                        getParent(),
                         pepperHolder,
                         qiChatbot,
                         chat,
                         futureChat,
                         futurePicture,
+                        true,
+                        true,
                         this::finishAffinity));
     }
 
@@ -424,7 +446,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     @Override
     public void onRobotFocusLost() {
-        RobotUtils.releaseRobot(getParent(), pepperHolder, qiChatbot, chat, futureChat, futurePicture, null);
+        RobotUtils.releaseRobot(pepperHolder, qiChatbot, chat, futureChat, futurePicture, true, true);
         this.qiContext = null;
     }
 
@@ -452,6 +474,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 scanObject();
             }
         } else if ("endAgain".equals(bookmark.getName())) {
+            RobotUtils.releaseRobot(pepperHolder, qiChatbot, chat, futureChat, futurePicture, false, false);
+        } else if ("endTryAgain".equals(bookmark.getName())) {
             runCallToAction();
         }
     }

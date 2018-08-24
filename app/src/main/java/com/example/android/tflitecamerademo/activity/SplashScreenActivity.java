@@ -1,6 +1,5 @@
 package com.example.android.tflitecamerademo.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +13,8 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -25,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SplashScreenActivity extends Activity implements RobotLifecycleCallbacks {
+public class SplashScreenActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = "SplashScreenActivity";
 
     @BindView(R.id.img_cross)
@@ -49,6 +50,8 @@ public class SplashScreenActivity extends Activity implements RobotLifecycleCall
                 | View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_IMMERSIVE
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.OVERLAY);
 
         setContentView(R.layout.activity_splashscreen);
         ButterKnife.bind(this);

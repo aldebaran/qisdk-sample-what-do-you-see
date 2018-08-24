@@ -19,12 +19,7 @@
 
     <!--Text to speak-->
     <string name="ready_speak_text">Alright I\'m ready</string>
-    <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition</string>
-    <string name="briefing_speak_text">You can show me an object at the height of my tablet, and I will say what I recognize</string>
-    <string name="call_to_action_speak_text">Tell me, \"what do you see\", when you are ready</string>
-    <string name="dont_understand_speak_text">Sorry, i don\'t understand\!</string>
-    <string name="dont_move_speak_text">Don\'t move!</string>
-    <string name="classify_speak_text">Maybe it\'s %s!</string>
+    <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition with TensorFlow</string>
 
     <!--String-->
     <string name="language">English</string>
