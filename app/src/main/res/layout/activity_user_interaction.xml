@@ -5,21 +5,12 @@
     tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
 
     <ImageView
-        android:id="@+id/img_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_question" />
-
-    <ImageView
         android:id="@+id/img_pepper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/img_question"
+        android:layout_centerInParent="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_pepper_head" />
+        android:src="@drawable/ic_pepper_head_vision" />
 
     <ImageView
         android:id="@+id/img_warning"
@@ -49,7 +40,7 @@
         android:fontFamily="@font/dosisbold"
         android:padding="20dip"
         android:text="@string/label_what_do_you_see"
-        android:textColor="@android:color/black"
+        android:textColor="@drawable/txt_btn_selector"
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -81,7 +72,7 @@
         android:fontFamily="@font/dosisbold"
         android:padding="20dip"
         android:text="@string/do_it_again"
-        android:textColor="@android:color/black"
+        android:textColor="@drawable/txt_btn_selector"
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="gone" />

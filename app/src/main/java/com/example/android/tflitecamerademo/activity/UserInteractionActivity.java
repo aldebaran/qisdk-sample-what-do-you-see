@@ -61,8 +61,6 @@ import static com.example.android.tflitecamerademo.tf.Constant.OUTPUT_NAME;
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";
 
-    @BindView(R.id.img_question)
-    ImageView imgQuestion;
     @BindView(R.id.img_pepper)
     ImageView imgPepper;
     @BindView(R.id.img_warning)
@@ -213,7 +211,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         isScanning.set(false);
 
         colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.VISIBLE);
         imgPepper.setVisibility(View.VISIBLE);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
@@ -231,7 +228,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         isScanning.set(false);
 
         colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.VISIBLE);
         imgPepper.setVisibility(View.VISIBLE);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
@@ -269,7 +265,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
     private void layoutCaptureMove(boolean showValid) {
         colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.INVISIBLE);
         imgPepper.setVisibility(View.VISIBLE);
         btnSee.setVisibility(View.GONE);
         flashCtn.setVisibility(View.GONE);
@@ -291,7 +286,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .duration(500)
                 .onStart(animator -> imgResult.setVisibility(View.VISIBLE))
                 .onEnd(animator -> {
-                    imgQuestion.setVisibility(View.INVISIBLE);
                     imgPepper.setVisibility(View.GONE);
                     imgWarning.setVisibility(View.GONE);
                     imgValid.setVisibility(View.GONE);
