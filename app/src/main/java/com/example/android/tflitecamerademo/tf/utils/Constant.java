@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo.tf;
+package com.example.android.tflitecamerademo.tf.utils;
 
 /**
  * The constant class for TensorFlow

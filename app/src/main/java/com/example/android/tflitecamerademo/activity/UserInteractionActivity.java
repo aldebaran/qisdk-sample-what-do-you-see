@@ -38,7 +38,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.example.android.tflitecamerademo.RobotUtils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.ImageClassifier;
-import com.example.android.tflitecamerademo.tf.Utils;
+import com.example.android.tflitecamerademo.tf.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.nio.ByteBuffer;
@@ -50,13 +50,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_MEAN;
-import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_STD;
-import static com.example.android.tflitecamerademo.tf.Constant.INPUT_NAME;
-import static com.example.android.tflitecamerademo.tf.Constant.INPUT_SIZE;
-import static com.example.android.tflitecamerademo.tf.Constant.LABEL_FILE;
-import static com.example.android.tflitecamerademo.tf.Constant.MODEL_FILE;
-import static com.example.android.tflitecamerademo.tf.Constant.OUTPUT_NAME;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.IMAGE_MEAN;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.IMAGE_STD;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.INPUT_NAME;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.INPUT_SIZE;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.LABEL_FILE;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.MODEL_FILE;
+import static com.example.android.tflitecamerademo.tf.utils.Constant.OUTPUT_NAME;
 
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";
@@ -379,7 +379,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         if (confidence > 15 && confidence < 40) {
             bookmark = "classify20";
-        } else if (confidence > 40 && confidence < 60) {
+        } else if (confidence > 40 && confidence < 60 ) {
             bookmark = "classify50";
         } else if (confidence > 60 && confidence < 80) {
             bookmark = "classify70";

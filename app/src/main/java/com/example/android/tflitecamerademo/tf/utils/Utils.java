@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo.tf;
+package com.example.android.tflitecamerademo.tf.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
