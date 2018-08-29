@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo;
+package com.example.android.tflitecamerademo.utils;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;

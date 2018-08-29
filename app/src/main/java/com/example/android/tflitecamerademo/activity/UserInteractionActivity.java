@@ -36,10 +36,10 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.android.tflitecamerademo.RobotUtils;
+import com.example.android.tflitecamerademo.utils.RobotUtils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.ImageClassifier;
-import com.example.android.tflitecamerademo.tf.utils.Utils;
+import com.example.android.tflitecamerademo.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.nio.ByteBuffer;
@@ -51,13 +51,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.android.tflitecamerademo.tf.utils.Constant.IMAGE_MEAN;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.IMAGE_STD;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.INPUT_NAME;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.INPUT_SIZE;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.LABEL_FILE;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.MODEL_FILE;
-import static com.example.android.tflitecamerademo.tf.utils.Constant.OUTPUT_NAME;
+import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_MEAN;
+import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_STD;
+import static com.example.android.tflitecamerademo.utils.Constant.INPUT_NAME;
+import static com.example.android.tflitecamerademo.utils.Constant.INPUT_SIZE;
+import static com.example.android.tflitecamerademo.utils.Constant.LABEL_FILE;
+import static com.example.android.tflitecamerademo.utils.Constant.MODEL_FILE;
+import static com.example.android.tflitecamerademo.utils.Constant.OUTPUT_NAME;
 
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";

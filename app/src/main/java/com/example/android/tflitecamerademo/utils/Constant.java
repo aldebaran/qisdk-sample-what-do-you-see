@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo.tf.utils;
+package com.example.android.tflitecamerademo.utils;
 
 /**
  * The constant class for TensorFlow
@@ -10,5 +10,5 @@ public class Constant {
     public static final String INPUT_NAME = "input";
     public static final String OUTPUT_NAME = "output";
     public static final String MODEL_FILE = "file:///android_asset/tensorflow_inception_graph.pb";
-    public static final String LABEL_FILE = "file:///android_asset/imagenet_comp_graph_label_strings.txt";
+    public static final String LABEL_FILE = "file:///android_asset/tensorflow_label_strings.txt";
 }
