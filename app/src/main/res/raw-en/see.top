@@ -11,12 +11,10 @@ proposal: %classify70 It's $object! ^enableThenGoto(again)
 proposal: %classify90 I'm sure it's $object! ^enableThenGoto(again)
 proposal: %failClassify I didn't recognize anything ^enableThenGoto(again)
 
-
 proposal: %callToAction Tell me, "what do you see", when you are ready
     u1:(~see) Get it! ^enableThenGoto(dontMove)
-    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat
+    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat ^stayInScope
 
 proposal: %again If you want to try again, show me something and tell me %endAgain
     u1:(~again) %tryAgain Ok let's try again! %endTryAgain
-    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat
-
+    u1:(e:Dialog/NotUnderstood) Sorry i don't understand, please repeat ^stayInScope

@@ -10,6 +10,7 @@ import android.support.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aldebaran.qi.Future;
@@ -35,10 +36,10 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.android.tflitecamerademo.RobotUtils;
+import com.example.android.tflitecamerademo.utils.RobotUtils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.ImageClassifier;
-import com.example.android.tflitecamerademo.tf.Utils;
+import com.example.android.tflitecamerademo.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.nio.ByteBuffer;
@@ -50,19 +51,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_MEAN;
-import static com.example.android.tflitecamerademo.tf.Constant.IMAGE_STD;
-import static com.example.android.tflitecamerademo.tf.Constant.INPUT_NAME;
-import static com.example.android.tflitecamerademo.tf.Constant.INPUT_SIZE;
-import static com.example.android.tflitecamerademo.tf.Constant.LABEL_FILE;
-import static com.example.android.tflitecamerademo.tf.Constant.MODEL_FILE;
-import static com.example.android.tflitecamerademo.tf.Constant.OUTPUT_NAME;
+import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_MEAN;
+import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_STD;
+import static com.example.android.tflitecamerademo.utils.Constant.INPUT_NAME;
+import static com.example.android.tflitecamerademo.utils.Constant.INPUT_SIZE;
+import static com.example.android.tflitecamerademo.utils.Constant.LABEL_FILE;
+import static com.example.android.tflitecamerademo.utils.Constant.MODEL_FILE;
+import static com.example.android.tflitecamerademo.utils.Constant.OUTPUT_NAME;
 
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";
 
-    @BindView(R.id.img_question)
-    ImageView imgQuestion;
     @BindView(R.id.img_pepper)
     ImageView imgPepper;
     @BindView(R.id.img_warning)
@@ -81,6 +80,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgCross;
     @BindView(R.id.img_home)
     ImageView imgHome;
+    @BindView(R.id.txt_object)
+    TextView txtObject;
 
     AtomicBoolean isScanning = new AtomicBoolean(false);
     AtomicBoolean isFirstTime = new AtomicBoolean(true);
@@ -212,9 +213,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void layoutBriefing() {
         isScanning.set(false);
 
-        colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.VISIBLE);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        imgPepper.setLayoutParams(params);
         imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head_vision);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
         btnSee.setVisibility(View.GONE);
@@ -222,6 +226,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         imgResult.setVisibility(View.GONE);
         btnAgain.setVisibility(View.GONE);
         imgHome.setVisibility(View.GONE);
+        txtObject.setVisibility(View.GONE);
+        colorTopButtons(android.R.color.black);
 
         btnSee.setEnabled(true);
         btnAgain.setEnabled(true);
@@ -230,20 +236,25 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void layoutCallToAction() {
         isScanning.set(false);
 
-        colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.VISIBLE);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        imgPepper.setLayoutParams(params);
         imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head_vision);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
         flashCtn.setVisibility(View.GONE);
         imgResult.setVisibility(View.GONE);
         btnAgain.setVisibility(View.GONE);
+        txtObject.setVisibility(View.GONE);
         imgHome.setVisibility(View.VISIBLE);
         YoYo.with(Techniques.SlideInUp)
                 .duration(500)
                 .onStart(animator -> btnSee.setVisibility(View.VISIBLE))
                 .playOn(btnSee);
 
+        colorTopButtons(android.R.color.black);
         btnSee.setEnabled(true);
         btnAgain.setEnabled(true);
     }
@@ -268,8 +279,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     private void layoutCaptureMove(boolean showValid) {
-        colorTopButtons(android.R.color.black);
-        imgQuestion.setVisibility(View.INVISIBLE);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.RIGHT_OF, (showValid) ? R.id.img_valid : R.id.img_warning);
+
+        imgPepper.setLayoutParams(params);
+        imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head);
         imgPepper.setVisibility(View.VISIBLE);
         btnSee.setVisibility(View.GONE);
         flashCtn.setVisibility(View.GONE);
@@ -278,6 +295,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         imgHome.setVisibility(View.VISIBLE);
         imgWarning.setVisibility((showValid) ? View.GONE : View.VISIBLE);
         imgValid.setVisibility((showValid) ? View.VISIBLE : View.GONE);
+        colorTopButtons(android.R.color.black);
 
         btnSee.setEnabled(false);
     }
@@ -291,7 +309,6 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
                 .duration(500)
                 .onStart(animator -> imgResult.setVisibility(View.VISIBLE))
                 .onEnd(animator -> {
-                    imgQuestion.setVisibility(View.INVISIBLE);
                     imgPepper.setVisibility(View.GONE);
                     imgWarning.setVisibility(View.GONE);
                     imgValid.setVisibility(View.GONE);
@@ -365,13 +382,10 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         for (Classifier.Recognition recognition :
                 results) {
-
             if (recognition.getConfidence() > bestRecognition.getConfidence())
                 bestRecognition = recognition;
-
         }
 
-        Log.d(TAG, "classifyImage: " + bestRecognition);
         layoutResult(Utils.getResizedBitmap(bitmap, 1400, 900, true));
         QiThreadPool.run(() -> processResult(bestRecognition));
     }
@@ -380,6 +394,9 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         String name = bestRecognition.getTitle();
         float confidence = recognition.getConfidence() * 100;
         String bookmark;
+
+        txtObject.setText(name + " : " + confidence);
+        txtObject.setVisibility(View.VISIBLE);
 
         playerSuccess.start();
 
@@ -395,9 +412,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
             bookmark = "failClassify";
         }
 
-        RobotUtils.goToBookmark(qiChatbot, bookmarks, bookmark, name).getValue();
-
         isScanning.set(false);
+
+        if (pepperHolder != null)
+            pepperHolder.release();
+
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, bookmark, name).getValue();
     }
     //endregion
 

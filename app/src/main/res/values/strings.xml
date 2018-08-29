@@ -24,7 +24,7 @@
     <!--String-->
     <string name="language">English</string>
     <string name="label_what_do_you_see">\"What do you see ?\"</string>
-    <string name="do_it_again">Try Again</string>
+    <string name="do_it_again">\"Try Again\"</string>
     <string name="wrong_language_title_dialog">WARNING</string>
     <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
     <string name="setting_button_dialog">Go to settings</string>
