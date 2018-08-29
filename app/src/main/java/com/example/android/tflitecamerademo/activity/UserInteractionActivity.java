@@ -10,6 +10,7 @@ import android.support.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aldebaran.qi.Future;
@@ -79,6 +80,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     ImageView imgCross;
     @BindView(R.id.img_home)
     ImageView imgHome;
+    @BindView(R.id.txt_object)
+    TextView txtObject;
 
     AtomicBoolean isScanning = new AtomicBoolean(false);
     AtomicBoolean isFirstTime = new AtomicBoolean(true);
@@ -210,8 +213,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void layoutBriefing() {
         isScanning.set(false);
 
-        colorTopButtons(android.R.color.black);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        imgPepper.setLayoutParams(params);
         imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head_vision);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
         btnSee.setVisibility(View.GONE);
@@ -219,6 +226,8 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         imgResult.setVisibility(View.GONE);
         btnAgain.setVisibility(View.GONE);
         imgHome.setVisibility(View.GONE);
+        txtObject.setVisibility(View.GONE);
+        colorTopButtons(android.R.color.black);
 
         btnSee.setEnabled(true);
         btnAgain.setEnabled(true);
@@ -227,19 +236,25 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     private void layoutCallToAction() {
         isScanning.set(false);
 
-        colorTopButtons(android.R.color.black);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        imgPepper.setLayoutParams(params);
         imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head_vision);
         imgWarning.setVisibility(View.GONE);
         imgValid.setVisibility(View.GONE);
         flashCtn.setVisibility(View.GONE);
         imgResult.setVisibility(View.GONE);
         btnAgain.setVisibility(View.GONE);
+        txtObject.setVisibility(View.GONE);
         imgHome.setVisibility(View.VISIBLE);
         YoYo.with(Techniques.SlideInUp)
                 .duration(500)
                 .onStart(animator -> btnSee.setVisibility(View.VISIBLE))
                 .playOn(btnSee);
 
+        colorTopButtons(android.R.color.black);
         btnSee.setEnabled(true);
         btnAgain.setEnabled(true);
     }
@@ -264,7 +279,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
     }
 
     private void layoutCaptureMove(boolean showValid) {
-        colorTopButtons(android.R.color.black);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imgPepper.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.RIGHT_OF, (showValid) ? R.id.img_valid : R.id.img_warning);
+
+        imgPepper.setLayoutParams(params);
+        imgPepper.setVisibility(View.VISIBLE);
+        imgPepper.setImageResource(R.drawable.ic_pepper_head);
         imgPepper.setVisibility(View.VISIBLE);
         btnSee.setVisibility(View.GONE);
         flashCtn.setVisibility(View.GONE);
@@ -273,6 +295,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         imgHome.setVisibility(View.VISIBLE);
         imgWarning.setVisibility((showValid) ? View.GONE : View.VISIBLE);
         imgValid.setVisibility((showValid) ? View.VISIBLE : View.GONE);
+        colorTopButtons(android.R.color.black);
 
         btnSee.setEnabled(false);
     }
@@ -359,13 +382,10 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         for (Classifier.Recognition recognition :
                 results) {
-
             if (recognition.getConfidence() > bestRecognition.getConfidence())
                 bestRecognition = recognition;
-
         }
 
-        Log.d(TAG, "classifyImage: " + bestRecognition);
         layoutResult(Utils.getResizedBitmap(bitmap, 1400, 900, true));
         QiThreadPool.run(() -> processResult(bestRecognition));
     }
@@ -375,11 +395,14 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         float confidence = recognition.getConfidence() * 100;
         String bookmark;
 
+        txtObject.setText(name + " : " + confidence);
+        txtObject.setVisibility(View.VISIBLE);
+
         playerSuccess.start();
 
         if (confidence > 15 && confidence < 40) {
             bookmark = "classify20";
-        } else if (confidence > 40 && confidence < 60 ) {
+        } else if (confidence > 40 && confidence < 60) {
             bookmark = "classify50";
         } else if (confidence > 60 && confidence < 80) {
             bookmark = "classify70";
@@ -389,9 +412,12 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
             bookmark = "failClassify";
         }
 
-        RobotUtils.goToBookmark(qiChatbot, bookmarks, bookmark, name).getValue();
-
         isScanning.set(false);
+
+        if (pepperHolder != null)
+            pepperHolder.release();
+
+        RobotUtils.goToBookmark(qiChatbot, bookmarks, bookmark, name).getValue();
     }
     //endregion
 
