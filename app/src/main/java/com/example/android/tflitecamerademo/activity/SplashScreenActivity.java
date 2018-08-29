@@ -41,6 +41,8 @@ public class SplashScreenActivity extends RobotActivity implements RobotLifecycl
 
         setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.OVERLAY);
 
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.OVERLAY);
+
         setContentView(R.layout.activity_splashscreen);
         ButterKnife.bind(this);
 
