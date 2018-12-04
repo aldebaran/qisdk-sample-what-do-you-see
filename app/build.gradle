@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 project.ext.ASSET_DIR = projectDir.toString() + '/src/main/assets'
 
+repositories { maven { url 'https://google.bintray.com/tensorflow' } }
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -12,9 +14,7 @@ android {
         versionName '2.1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
-    lintOptions {
-        abortOnError false
-    }
+    lintOptions { abortOnError false }
     buildTypes {
         release {
             minifyEnabled false
@@ -25,16 +25,9 @@ android {
         noCompress 'tflite'
         noCompress 'lite'
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
-
-repositories {
-    maven {
-        url 'https://google.bintray.com/tensorflow'
     }
 }
 
@@ -43,33 +36,42 @@ dependencies {
     def qiSdkVersion = '1.4.3'
     def butterKnifeVersion = '9.0.0-rc2'
 
-    //Support libs
-    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.core:core:1.1.0-alpha01'
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.google.android.material:material:1.1.0-alpha01'
-    implementation 'androidx.annotation:annotation:1.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    // "libs" folder
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    //UI Handling
-    implementation "com.jakewharton:butterknife:$butterKnifeVersion"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
-    implementation 'com.airbnb.android:lottie:2.5.5'
-    implementation 'com.daimajia.easing:library:2.0@aar'
-    implementation 'com.daimajia.androidanimations:library:2.3@aar'
+    // AndroidX
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    implementation 'androidx.core:core:1.1.0-alpha01'
+    implementation 'androidx.annotation:annotation:1.0.1'
+
+    // Material
+    implementation 'com.google.android.material:material:1.1.0-alpha01'
 
     //QiSDK
     implementation "com.aldebaran:qisdk:$qiSdkVersion"
     implementation "com.aldebaran:qisdk-design:$qiSdkVersion"
 
+    // Fields & methods binding
+    implementation "com.jakewharton:butterknife:$butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
+    // After Effects animations
+    implementation 'com.airbnb.android:lottie:2.5.5'
+
+    // UI Handling
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.3@aar'
+
     //TensorFlow
     implementation 'org.tensorflow:tensorflow-android:+'
 
-    //Test libs
+    // Unit tests
     testImplementation 'junit:junit:4.12'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
+    // Instrumented tests
+    androidTestImplementation 'androidx.test:runner:1.1.1-alpha01'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1-alpha01'
 }

@@ -1,7 +1,18 @@
-# "What do you See" sample for Pepper
+# What do you See
 
-This application is a sample for Pepper that uses the tablet's camera to recognize objects based on Tensorflow recognition and the QiSDK for Android.
+**WhatDoYouSee** is an Android application for **Pepper the robot**.
+It was developed using the QiSDK (https://qisdk.softbankrobotics.com).
 
-http://android.aldebaran.com/sdk/doc/pepper-sdk/index.html
+This sample shows how to use **Pepper's camera** and **Tensorflow** to recognize objects.
 
-This work is based on Tensorflow for Poets 2 Codelab : https://github.com/googlecodelabs/tensorflow-for-poets-2
+It's based on Tensorflow for Poets 2 Codelab : https://github.com/googlecodelabs/tensorflow-for-poets-2
+
+## Minimum configuration
+
+* Pepper 1.9
+* API level 3
+* A real robot (does not work on a virtual robot).
+
+## Licence
+
+See the [COPYING](COPYING.md) file for the licence.
