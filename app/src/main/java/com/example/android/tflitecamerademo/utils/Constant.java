@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.utils;
 
 /**

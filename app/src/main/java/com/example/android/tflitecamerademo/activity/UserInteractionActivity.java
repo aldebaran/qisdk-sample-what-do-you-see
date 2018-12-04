@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.activity;
 
 import android.graphics.Bitmap;
@@ -6,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import androidx.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,9 +39,9 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.android.tflitecamerademo.utils.RobotUtils;
 import com.example.android.tflitecamerademo.tf.Classifier;
 import com.example.android.tflitecamerademo.tf.ImageClassifier;
+import com.example.android.tflitecamerademo.utils.RobotUtils;
 import com.example.android.tflitecamerademo.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.ColorRes;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

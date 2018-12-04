@@ -1,7 +1,8 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.utils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
@@ -19,6 +20,9 @@ import com.aldebaran.qi.sdk.object.holder.Holder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class RobotUtils {
 
@@ -66,7 +70,7 @@ public class RobotUtils {
                                     Future<TakePicture> futurePicture,
                                     boolean stopChat,
                                     boolean unregisterListener) {
-        releaseRobot(holder, chatBot, chat, futureChat, futurePicture, stopChat,unregisterListener, null);
+        releaseRobot(holder, chatBot, chat, futureChat, futurePicture, stopChat, unregisterListener, null);
 
     }
 

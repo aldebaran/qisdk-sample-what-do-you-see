@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.tf;
 
 import android.graphics.Bitmap;
@@ -86,10 +90,6 @@ public interface Classifier {
     }
 
     List<Recognition> recognizeImage(Bitmap bitmap);
-
-    void enableStatLogging(final boolean debug);
-
-    String getStatString();
 
     void close();
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.activity;
 
 import android.app.AlertDialog;
@@ -5,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -97,6 +100,7 @@ public class SplashScreenActivity extends RobotActivity implements RobotLifecycl
     }
 
     //region RobotCallback
+
     /**
      * Say when it's ready and show the introduction's Activity
      *

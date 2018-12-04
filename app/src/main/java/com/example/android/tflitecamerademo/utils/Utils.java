@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the licence
+ */
 package com.example.android.tflitecamerademo.utils;
 
 import android.graphics.Bitmap;
@@ -7,10 +11,11 @@ public class Utils {
 
     /**
      * Resize a given Bitmap into another one
-     * @param bm the {@link Bitmap} to resize
-     * @param newWidth the new width of the bitmap
+     *
+     * @param bm        the {@link Bitmap} to resize
+     * @param newWidth  the new width of the bitmap
      * @param newHeight the new height of the bitmap
-     * @param recycle if you want to recycle the bitmap
+     * @param recycle   if you want to recycle the bitmap
      * @return the resized {@link Bitmap}
      */
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean recycle) {
