@@ -382,7 +382,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
-        bestRecognition = new Classifier.Recognition("test", "testObject", 0.0f, null);
+        bestRecognition = new Classifier.Recognition("test", "testObject", 0.0f);
 
         for (Classifier.Recognition recognition :
                 results) {
@@ -399,7 +399,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         float confidence = recognition.getConfidence() * 100;
         String bookmark;
 
-        txtObject.setText(name + " : " + confidence);
+        txtObject.setText(getString(R.string.txt_object_text, name, confidence));
         txtObject.setVisibility(View.VISIBLE);
 
         playerSuccess.start();

@@ -15,12 +15,15 @@
 -->
 <resources>
 
-    <style name="MaterialTheme" parent="android:Theme.Material.Light.NoActionBar.Fullscreen" />
-
-    <style name="FullscreenTheme" parent="MaterialTheme">
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
-        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:buttonStyle">@style/AppTheme.Button</item>
     </style>
+
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored" />
+
 </resources>

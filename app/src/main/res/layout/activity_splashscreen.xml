@@ -21,9 +21,10 @@
         android:id="@+id/img_cross"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="15dip"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_cross" />
 
 </RelativeLayout>

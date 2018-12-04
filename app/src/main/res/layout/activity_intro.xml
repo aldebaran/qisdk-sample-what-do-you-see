@@ -2,15 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/white"
     android:orientation="vertical"
     tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
 
     <ImageView
         android:layout_width="366dip"
         android:layout_height="394dip"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/img_tf"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_pepper_bottle" />
 
     <ImageView
@@ -19,15 +20,17 @@
         android:layout_height="132dip"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dip"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_tensor_flow" />
 
     <ImageView
         android:id="@+id/img_cross"
         android:layout_width="48dip"
         android:layout_height="48dip"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_cross" />
 
 </RelativeLayout>

@@ -5,9 +5,9 @@
 package com.example.android.tflitecamerademo.tf;
 
 import android.graphics.Bitmap;
-import android.graphics.RectF;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Generic interface for interacting with different recognition engines.
@@ -16,7 +16,7 @@ public interface Classifier {
     /**
      * An immutable result returned by a Classifier describing what was recognized.
      */
-    public class Recognition {
+    class Recognition {
         /**
          * A unique identifier for what has been recognized. Specific to the class, not the instance of
          * the object.
@@ -33,17 +33,11 @@ public interface Classifier {
          */
         private final Float confidence;
 
-        /**
-         * Optional location within the source image for the location of the recognized object.
-         */
-        private RectF location;
-
         public Recognition(
-                final String id, final String title, final Float confidence, final RectF location) {
+                final String id, final String title, final Float confidence) {
             this.id = id;
             this.title = title;
             this.confidence = confidence;
-            this.location = location;
         }
 
         public String getId() {
@@ -58,14 +52,6 @@ public interface Classifier {
             return confidence;
         }
 
-        public RectF getLocation() {
-            return new RectF(location);
-        }
-
-        public void setLocation(RectF location) {
-            this.location = location;
-        }
-
         @Override
         public String toString() {
             String resultString = "";
@@ -78,11 +64,7 @@ public interface Classifier {
             }
 
             if (confidence != null) {
-                resultString += String.format("(%.1f%%) ", confidence * 100.0f);
-            }
-
-            if (location != null) {
-                resultString += location + " ";
+                resultString += String.format(Locale.getDefault(), "(%.1f%%) ", confidence * 100.0f);
             }
 
             return resultString.trim();

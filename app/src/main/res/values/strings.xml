@@ -14,6 +14,9 @@
  limitations under the License.
 -->
 <resources>
+
+    <string name="app_name">What Do You See Sample</string>
+
     <!--Lottie File-->
     <string name="splashscreen">lottie/splashy_loader.json</string>
 
@@ -29,5 +32,6 @@
     <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
     <string name="setting_button_dialog">Go to settings</string>
 
+    <string name="txt_object_text">%1$s : %2$f</string>
 
 </resources>
