@@ -6,7 +6,7 @@ import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.ColorRes;
+import androidx.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;

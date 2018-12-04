@@ -1,12 +1,10 @@
 package com.example.android.tflitecamerademo.utils;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
-import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.builder.HolderBuilder;
 import com.aldebaran.qi.sdk.object.camera.TakePicture;
 import com.aldebaran.qi.sdk.object.conversation.AutonomousReactionImportance;
