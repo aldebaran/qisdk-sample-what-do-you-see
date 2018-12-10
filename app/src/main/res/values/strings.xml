@@ -15,7 +15,7 @@
 -->
 <resources>
 
-    <string name="app_name">What Do You See Sample</string>
+    <string name="app_name">What Do You See</string>
 
     <!--Lottie File-->
     <string name="splashscreen">lottie/splashy_loader.json</string>
