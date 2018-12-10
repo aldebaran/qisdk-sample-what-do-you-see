@@ -12,6 +12,6 @@ It's based on Tensorflow for Poets 2 Codelab : https://github.com/googlecodelabs
 * API level 3.
 * A real robot (does not work on a virtual robot).
 
-## Licence
+## License
 
-See the [COPYING](COPYING.md) file for the licence.
+See the [COPYING](COPYING.md) file for the license.
