@@ -39,14 +39,15 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.softbankrobotics.sample.whatdoyousee.R;
 import com.softbankrobotics.sample.whatdoyousee.tf.Classifier;
 import com.softbankrobotics.sample.whatdoyousee.tf.ImageClassifier;
 import com.softbankrobotics.sample.whatdoyousee.utils.RobotUtils;
 import com.softbankrobotics.sample.whatdoyousee.utils.Utils;
-import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -399,7 +400,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         float confidence = recognition.getConfidence() * 100;
         String bookmark;
 
-        txtObject.setText(getString(R.string.txt_object_text, name, confidence));
+        txtObject.setText(getString(R.string.txt_object_text, name, String.format(Locale.getDefault(), "%.2f", confidence)));
         txtObject.setVisibility(View.VISIBLE);
 
         playerSuccess.start();
