@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
+    tools:context="com.softbankrobotics.sample.whatdoyousee.activity.IntroductionActivity">
 
     <ImageView
         android:layout_width="366dip"

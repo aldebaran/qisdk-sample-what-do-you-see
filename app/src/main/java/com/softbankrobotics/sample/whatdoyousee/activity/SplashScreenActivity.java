@@ -2,7 +2,7 @@
  * Copyright (C) 2018 SoftBank Robotics Europe
  * See COPYING for the license
  */
-package com.example.android.tflitecamerademo.activity;
+package com.softbankrobotics.sample.whatdoyousee.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;

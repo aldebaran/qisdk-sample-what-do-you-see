@@ -2,7 +2,7 @@
  * Copyright (C) 2018 SoftBank Robotics Europe
  * See COPYING for the license
  */
-package com.example.android.tflitecamerademo.activity;
+package com.softbankrobotics.sample.whatdoyousee.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,10 +39,10 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.android.tflitecamerademo.tf.Classifier;
-import com.example.android.tflitecamerademo.tf.ImageClassifier;
-import com.example.android.tflitecamerademo.utils.RobotUtils;
-import com.example.android.tflitecamerademo.utils.Utils;
+import com.softbankrobotics.sample.whatdoyousee.tf.Classifier;
+import com.softbankrobotics.sample.whatdoyousee.tf.ImageClassifier;
+import com.softbankrobotics.sample.whatdoyousee.utils.RobotUtils;
+import com.softbankrobotics.sample.whatdoyousee.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
 
 import java.nio.ByteBuffer;
@@ -55,13 +55,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_MEAN;
-import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_STD;
-import static com.example.android.tflitecamerademo.utils.Constant.INPUT_NAME;
-import static com.example.android.tflitecamerademo.utils.Constant.INPUT_SIZE;
-import static com.example.android.tflitecamerademo.utils.Constant.LABEL_FILE;
-import static com.example.android.tflitecamerademo.utils.Constant.MODEL_FILE;
-import static com.example.android.tflitecamerademo.utils.Constant.OUTPUT_NAME;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.IMAGE_MEAN;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.IMAGE_STD;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.INPUT_NAME;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.INPUT_SIZE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.LABEL_FILE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.MODEL_FILE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.OUTPUT_NAME;
 
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";

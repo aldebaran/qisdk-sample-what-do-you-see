@@ -2,7 +2,7 @@
  * Copyright (C) 2018 SoftBank Robotics Europe
  * See COPYING for the license
  */
-package com.example.android.tflitecamerademo.tf;
+package com.softbankrobotics.sample.whatdoyousee.tf;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -121,7 +121,7 @@ public class ImageClassifier implements Classifier {
      * Classify a bitmap
      *
      * @param bitmap the {@link Bitmap} to analyse
-     * @return a list of {@link com.example.android.tflitecamerademo.tf.Classifier.Recognition} object
+     * @return a list of {@link com.softbankrobotics.sample.whatdoyousee.tf.Classifier.Recognition} object
      */
     @Override
     public List<Recognition> recognizeImage(final Bitmap bitmap) {

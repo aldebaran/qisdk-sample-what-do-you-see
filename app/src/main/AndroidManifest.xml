@@ -33,7 +33,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.example.android.tflitecamerademo.activity.SplashScreenActivity"
+            android:name=".activity.SplashScreenActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,9 +44,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.android.tflitecamerademo.activity.IntroductionActivity" />
+        <activity android:name=".activity.IntroductionActivity" />
 
-        <activity android:name="com.example.android.tflitecamerademo.activity.UserInteractionActivity" />
+        <activity android:name=".activity.UserInteractionActivity" />
 
     </application>
 </manifest>

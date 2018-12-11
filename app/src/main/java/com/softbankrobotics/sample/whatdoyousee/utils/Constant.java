@@ -2,7 +2,7 @@
  * Copyright (C) 2018 SoftBank Robotics Europe
  * See COPYING for the license
  */
-package com.example.android.tflitecamerademo.utils;
+package com.softbankrobotics.sample.whatdoyousee.utils;
 
 /**
  * The constant class for TensorFlow

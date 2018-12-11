@@ -2,7 +2,7 @@
  * Copyright (C) 2018 SoftBank Robotics Europe
  * See COPYING for the license
  */
-package com.example.android.tflitecamerademo.tf;
+package com.softbankrobotics.sample.whatdoyousee.tf;
 
 import android.graphics.Bitmap;
 
