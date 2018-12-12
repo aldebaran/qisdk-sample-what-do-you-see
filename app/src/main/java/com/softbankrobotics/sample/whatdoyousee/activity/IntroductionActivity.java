@@ -1,4 +1,8 @@
-package com.example.android.tflitecamerademo.activity;
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the license
+ */
+package com.softbankrobotics.sample.whatdoyousee.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

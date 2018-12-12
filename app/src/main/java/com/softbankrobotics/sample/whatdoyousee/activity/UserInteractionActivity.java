@@ -1,4 +1,8 @@
-package com.example.android.tflitecamerademo.activity;
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the license
+ */
+package com.softbankrobotics.sample.whatdoyousee.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -6,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.ColorRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,28 +39,30 @@ import com.aldebaran.qi.sdk.object.image.EncodedImageHandle;
 import com.aldebaran.qi.sdk.object.image.TimestampedImageHandle;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.android.tflitecamerademo.utils.RobotUtils;
-import com.example.android.tflitecamerademo.tf.Classifier;
-import com.example.android.tflitecamerademo.tf.ImageClassifier;
-import com.example.android.tflitecamerademo.utils.Utils;
 import com.softbankrobotics.sample.whatdoyousee.R;
+import com.softbankrobotics.sample.whatdoyousee.tf.Classifier;
+import com.softbankrobotics.sample.whatdoyousee.tf.ImageClassifier;
+import com.softbankrobotics.sample.whatdoyousee.utils.RobotUtils;
+import com.softbankrobotics.sample.whatdoyousee.utils.Utils;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.ColorRes;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_MEAN;
-import static com.example.android.tflitecamerademo.utils.Constant.IMAGE_STD;
-import static com.example.android.tflitecamerademo.utils.Constant.INPUT_NAME;
-import static com.example.android.tflitecamerademo.utils.Constant.INPUT_SIZE;
-import static com.example.android.tflitecamerademo.utils.Constant.LABEL_FILE;
-import static com.example.android.tflitecamerademo.utils.Constant.MODEL_FILE;
-import static com.example.android.tflitecamerademo.utils.Constant.OUTPUT_NAME;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.IMAGE_MEAN;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.IMAGE_STD;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.INPUT_NAME;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.INPUT_SIZE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.LABEL_FILE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.MODEL_FILE;
+import static com.softbankrobotics.sample.whatdoyousee.utils.Constant.OUTPUT_NAME;
 
 public class UserInteractionActivity extends RobotActivity implements RobotLifecycleCallbacks, Chat.OnHeardListener, QiChatbot.OnBookmarkReachedListener {
     private static final String TAG = "UserInteractionActivity";
@@ -378,7 +383,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
 
         Bitmap resizedBitmap = Utils.getResizedBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap);
-        bestRecognition = new Classifier.Recognition("test", "testObject", 0.0f, null);
+        bestRecognition = new Classifier.Recognition("test", "testObject", 0.0f);
 
         for (Classifier.Recognition recognition :
                 results) {
@@ -395,7 +400,7 @@ public class UserInteractionActivity extends RobotActivity implements RobotLifec
         float confidence = recognition.getConfidence() * 100;
         String bookmark;
 
-        txtObject.setText(name + " : " + confidence);
+        txtObject.setText(getString(R.string.txt_object_text, name, String.format(Locale.getDefault(), "%.2f", confidence)));
         txtObject.setVisibility(View.VISIBLE);
 
         playerSuccess.start();

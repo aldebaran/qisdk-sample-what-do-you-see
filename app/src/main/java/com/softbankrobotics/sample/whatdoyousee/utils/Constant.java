@@ -1,9 +1,18 @@
-package com.example.android.tflitecamerademo.utils;
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the license
+ */
+package com.softbankrobotics.sample.whatdoyousee.utils;
 
 /**
  * The constant class for TensorFlow
  */
 public class Constant {
+
+    private Constant() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static final int INPUT_SIZE = 224;
     public static final int IMAGE_MEAN = 117;
     public static final float IMAGE_STD = 1;

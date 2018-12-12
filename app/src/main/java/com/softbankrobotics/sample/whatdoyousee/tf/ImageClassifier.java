@@ -1,9 +1,17 @@
-package com.example.android.tflitecamerademo.tf;
+/*
+ * Copyright (C) 2018 SoftBank Robotics Europe
+ * See COPYING for the license
+ */
+package com.softbankrobotics.sample.whatdoyousee.tf;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Trace;
 import android.util.Log;
+
+import org.tensorflow.Operation;
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,10 +20,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Vector;
-import org.tensorflow.Operation;
-import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
-/** A classifier specialized to label images using TensorFlow. */
+/**
+ * A classifier specialized to label images using TensorFlow.
+ */
 public class ImageClassifier implements Classifier {
     private static final String TAG = "ImageClassifier";
 
@@ -41,19 +49,20 @@ public class ImageClassifier implements Classifier {
 
     private TensorFlowInferenceInterface inferenceInterface;
 
-    private ImageClassifier() {}
+    private ImageClassifier() {
+    }
 
     /**
      * Initializes a native TensorFlow session for classifying images.
      *
-     * @param assetManager The asset manager to be used to load assets.
+     * @param assetManager  The asset manager to be used to load assets.
      * @param modelFilename The filepath of the model GraphDef protocol buffer.
      * @param labelFilename The filepath of label file for classes.
-     * @param inputSize The input size. A square image of inputSize x inputSize is assumed.
-     * @param imageMean The assumed mean of the image values.
-     * @param imageStd The assumed std of the image values.
-     * @param inputName The label of the image input node.
-     * @param outputName The label of the output node.
+     * @param inputSize     The input size. A square image of inputSize x inputSize is assumed.
+     * @param imageMean     The assumed mean of the image values.
+     * @param imageStd      The assumed std of the image values.
+     * @param inputName     The label of the image input node.
+     * @param outputName    The label of the output node.
      * @throws IOException
      */
     public static Classifier create(
@@ -82,7 +91,7 @@ public class ImageClassifier implements Classifier {
             }
             br.close();
         } catch (IOException e) {
-            throw new RuntimeException("Problem reading label file!" , e);
+            throw new RuntimeException("Problem reading label file!", e);
         }
 
         c.inferenceInterface = new TensorFlowInferenceInterface(assetManager, modelFilename);
@@ -100,7 +109,7 @@ public class ImageClassifier implements Classifier {
         c.imageStd = imageStd;
 
         // Pre-allocate buffers.
-        c.outputNames = new String[] {outputName};
+        c.outputNames = new String[]{outputName};
         c.intValues = new int[inputSize * inputSize];
         c.floatValues = new float[inputSize * inputSize * 3];
         c.outputs = new float[numClasses];
@@ -110,8 +119,9 @@ public class ImageClassifier implements Classifier {
 
     /**
      * Classify a bitmap
+     *
      * @param bitmap the {@link Bitmap} to analyse
-     * @return a list of {@link com.example.android.tflitecamerademo.tf.Classifier.Recognition} object
+     * @return a list of {@link com.softbankrobotics.sample.whatdoyousee.tf.Classifier.Recognition} object
      */
     @Override
     public List<Recognition> recognizeImage(final Bitmap bitmap) {
@@ -158,9 +168,7 @@ public class ImageClassifier implements Classifier {
                         });
         for (int i = 0; i < outputs.length; ++i) {
             if (outputs[i] > THRESHOLD) {
-                pq.add(
-                        new Recognition(
-                                "" + i, labels.size() > i ? labels.get(i) : "unknown", outputs[i], null));
+                pq.add(new Recognition("" + i, labels.size() > i ? labels.get(i) : "unknown", outputs[i]));
             }
         }
         final ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
@@ -170,16 +178,6 @@ public class ImageClassifier implements Classifier {
         }
         Trace.endSection(); // "recognizeImage"
         return recognitions;
-    }
-
-    @Override
-    public void enableStatLogging(boolean logStats) {
-        this.logStats = logStats;
-    }
-
-    @Override
-    public String getStatString() {
-        return inferenceInterface.getStatString();
     }
 
     @Override
