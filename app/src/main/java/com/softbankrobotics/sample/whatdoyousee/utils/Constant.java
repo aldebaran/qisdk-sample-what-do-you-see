@@ -10,7 +10,7 @@ package com.softbankrobotics.sample.whatdoyousee.utils;
 public class Constant {
 
     private Constant() {
-        throw new IllegalStateException("Utility class");
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static final int INPUT_SIZE = 224;
