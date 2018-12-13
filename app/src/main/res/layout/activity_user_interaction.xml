@@ -1,31 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.tflitecamerademo.activity.IntroductionActivity">
-
-    <ImageView
-        android:id="@+id/img_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_question" />
+    tools:context="com.softbankrobotics.sample.whatdoyousee.activity.IntroductionActivity">
 
     <ImageView
         android:id="@+id/img_pepper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/img_question"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_pepper_head" />
+        android:src="@drawable/ic_pepper_head_vision" />
 
     <ImageView
         android:id="@+id/img_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_warning"
         android:visibility="gone" />
 
@@ -34,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/ic_success"
         android:visibility="gone" />
 
@@ -45,11 +40,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dip"
         android:background="@drawable/grey_green_selector"
-        android:elevation="10dp"
+        android:elevation="1dp"
         android:fontFamily="@font/dosisbold"
         android:padding="20dip"
         android:text="@string/label_what_do_you_see"
-        android:textColor="@android:color/black"
+        android:textColor="@color/txt_btn_selector"
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -58,7 +53,8 @@
         android:id="@+id/flash_ctn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@color/white"
+        android:contentDescription="@string/app_name"
+        android:src="@android:color/white"
         android:visibility="gone" />
 
     <ImageView
@@ -66,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
+        android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
@@ -77,11 +74,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dip"
         android:background="@drawable/grey_green_selector"
-        android:elevation="10dp"
+        android:elevation="1dip"
         android:fontFamily="@font/dosisbold"
         android:padding="20dip"
         android:text="@string/do_it_again"
-        android:textColor="@android:color/black"
+        android:textColor="@color/txt_btn_selector"
         android:textSize="45sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -90,10 +87,28 @@
         android:id="@+id/img_cross"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/app_name"
         android:padding="15dip"
         android:src="@drawable/ic_cross" />
+
+    <TextView
+        android:id="@+id/txt_object"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/img_cross"
+        android:layout_alignBottom="@+id/img_cross"
+        android:layout_toStartOf="@+id/img_cross"
+        android:layout_toEndOf="@+id/img_home"
+        android:background="@color/grey_translucent"
+        android:gravity="center"
+        android:paddingStart="25dip"
+        android:paddingEnd="25dip"
+        android:textColor="@android:color/black"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/img_home"
@@ -101,6 +116,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:contentDescription="@string/app_name"
         android:padding="15dip"
         android:src="@drawable/ic_home"
         android:visibility="gone" />
