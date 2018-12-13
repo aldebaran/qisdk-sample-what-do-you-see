@@ -1,38 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?><!--
- Copyright 2014 The Android Open Source Project
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="app_name">What Do You See</string>
+
     <!--Lottie File-->
     <string name="splashscreen">lottie/splashy_loader.json</string>
 
     <!--Text to speak-->
     <string name="ready_speak_text">Alright I\'m ready</string>
-    <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition</string>
-    <string name="briefing_speak_text">You can show me an object at the height of my tablet, and I will say what I recognize</string>
-    <string name="call_to_action_speak_text">Tell me, \"what do you see\", when you are ready</string>
-    <string name="dont_understand_speak_text">Sorry, i don\'t understand\!</string>
-    <string name="dont_move_speak_text">Don\'t move!</string>
-    <string name="classify_speak_text">Maybe it\'s %s!</string>
+    <string name="intro_speak_text">Let me show you what I\'m capable of about object recognition with TensorFlow</string>
 
     <!--String-->
     <string name="language">English</string>
     <string name="label_what_do_you_see">\"What do you see ?\"</string>
-    <string name="do_it_again">Try Again</string>
+    <string name="do_it_again">\"Try Again\"</string>
     <string name="wrong_language_title_dialog">WARNING</string>
     <string name="wrong_language_message_dialog">This application is only available in English. Please set the tablet language to \"English\".</string>
     <string name="setting_button_dialog">Go to settings</string>
 
+    <string name="txt_object_text">%1$s : %2$s%%</string>
 
 </resources>
